@@ -64,27 +64,27 @@ ALL_US_STATE_TOKENS = frozenset({
 
 REGIONAL_PACKAGES = {
   "pkg:midwest": {
-    "title": tr_noop("U.S. Midwest Region (12 States)"),
+    "title": tr_noop("美国中西部（12 州）"),
     "subtitle": tr_noop("IL, IN, IA, KS, MI, MN, MO, NE, ND, OH, SD, WI"),
     "tokens": frozenset({r["token"] for g in STATES_SECTION["groups"] if g["key"] == "midwest" for r in g["regions"]}),
   },
   "pkg:northeast": {
-    "title": tr_noop("U.S. Northeast Region (9 States)"),
+    "title": tr_noop("美国东北部（9 州）"),
     "subtitle": tr_noop("CT, ME, MA, NH, NJ, NY, PA, RI, VT"),
     "tokens": frozenset({r["token"] for g in STATES_SECTION["groups"] if g["key"] == "northeast" for r in g["regions"]}),
   },
   "pkg:south": {
-    "title": tr_noop("U.S. South Region (17 States)"),
+    "title": tr_noop("美国南部（17 州）"),
     "subtitle": tr_noop("AL, AR, DE, DC, FL, GA, KY, LA, MD, MS, NC, OK, SC, TN, TX, VA, WV"),
     "tokens": frozenset({r["token"] for g in STATES_SECTION["groups"] if g["key"] == "south" for r in g["regions"]}),
   },
   "pkg:west": {
-    "title": tr_noop("U.S. West Region (13 States)"),
+    "title": tr_noop("美国西部（13 州）"),
     "subtitle": tr_noop("AK, AZ, CA, CO, HI, ID, MT, NV, NM, OR, UT, WA, WY"),
     "tokens": frozenset({r["token"] for g in STATES_SECTION["groups"] if g["key"] == "west" for r in g["regions"]}),
   },
   "pkg:territories": {
-    "title": tr_noop("U.S. Territories (5 Territories)"),
+    "title": tr_noop("美国领地（5 领地）"),
     "subtitle": tr_noop("AS, GU, MP, PR, VI"),
     "tokens": frozenset({r["token"] for g in STATES_SECTION["groups"] if g["key"] == "territories" for r in g["regions"]}),
   },
@@ -113,7 +113,7 @@ def _format_mb(size_bytes: int) -> str:
 
 def _format_elapsed_ms(elapsed_ms: int) -> str:
   if elapsed_ms <= 0:
-    return tr("Calculating...")
+    return tr("计算中…")
   total_seconds = elapsed_ms // 1000
   hours = total_seconds // 3600
   minutes = (total_seconds % 3600) // 60
@@ -125,13 +125,13 @@ def _format_elapsed_ms(elapsed_ms: int) -> str:
 
 def _format_eta_ms(elapsed_ms: int, downloaded_files: int, total_files: int) -> str:
   if elapsed_ms <= 0 or downloaded_files <= 0 or total_files <= 0 or downloaded_files >= total_files:
-    return tr("Calculating...")
+    return tr("计算中…")
   remaining_files = total_files - downloaded_files
   if remaining_files <= 0:
-    return tr("Almost done")
+    return tr("即将完成")
   files_per_ms = downloaded_files / max(elapsed_ms, 1)
   if files_per_ms <= 0:
-    return tr("Calculating...")
+    return tr("计算中…")
   remaining_ms = int(remaining_files / files_per_ms)
   return _format_elapsed_ms(remaining_ms)
 
@@ -167,7 +167,7 @@ class MapsManagerView(PanelManagerView):
 
     self._source_segmented_control = self._child(
       AetherSegmentedControl(
-        [tr("U.S. States & Regions"), tr("Other Countries")],
+        [tr("美国各州与地区"), tr("其他国家")],
         self._controller._get_source_segment_index,
         self._controller._on_source_segment_change,
         style=PANEL_STYLE,
@@ -202,7 +202,7 @@ class MapsManagerView(PanelManagerView):
     header_y = seg_y + SEGMENTED_CONTROL_HEIGHT + SUBHEADER_GAP
     draw_section_header(
       rl.Rectangle(scroll_rect.x + BROWSER_INSET, header_y, content_width - BROWSER_INSET * 2, BROWSER_SECTION_HEADER_HEIGHT),
-      tr("Map Packages & Regions"),
+      tr("地图包与地区"),
       trailing_text=self._controller._active_view_count_text(),
       title_size=36,
       trailing_size=24,
@@ -249,8 +249,8 @@ class MapsManagerView(PanelManagerView):
         draw_selection_list_row(
           row_rect,
           title=tr(region["label"]),
-          subtitle=tr("Downloaded on device"),
-          action_text=tr("Downloaded"),
+          subtitle=tr("设备上已下载"),
+          action_text=tr("已下载"),
           current=True,
           hovered=hovered,
           pressed=pressed,
@@ -276,8 +276,8 @@ class MapsManagerView(PanelManagerView):
         y += 8.0
         draw_section_header(
           rl.Rectangle(scroll_rect.x + BROWSER_INSET, y, content_width - BROWSER_INSET * 2, BROWSER_SECTION_HEADER_HEIGHT),
-          tr("Available for Download"),
-          trailing_text=tr("{} available").format(len(downloadable)),
+          tr("可下载"),
+          trailing_text=tr("{} 可用").format(len(downloadable)),
           title_size=30,
           trailing_size=22,
           style=PANEL_STYLE,
@@ -364,8 +364,8 @@ class MapsManagerView(PanelManagerView):
 
     # Telemetry Strip (Storage & Last Updated — Label 24pt, Value 32pt, value_top_offset=30 for zero overlap)
     metrics = [
-      (tr("Storage"), self._controller._storage_text),
-      (tr("Last Updated"), self._controller._last_updated_text()),
+      (tr("存储"), self._controller._storage_text),
+      (tr("最后更新"), self._controller._last_updated_text()),
     ]
     draw_metric_strip(
       rl.Rectangle(content_x, rect.y + 128, summary_w, 72),
@@ -408,7 +408,7 @@ class MapsManagerView(PanelManagerView):
     remove_border = with_alpha(AetherListColors.DANGER, 90 if (pressed or hovered) else (56 if enabled else 24))
     draw_action_pill(
       self._remove_rect,
-      tr("Remove"),
+      tr("移除"),
       remove_bg,
       remove_border,
       AetherListColors.HEADER if enabled else AetherListColors.MUTED,
@@ -459,7 +459,7 @@ class StarPilotMapsLayout(_SettingsPage):
     )
     self._schedule_button = self._child(
       AetherButton(
-        lambda: tr("Update: {}").format(_localized_schedule_label(self._params.get('PreferredSchedule'))),
+        lambda: tr("更新：{}").format(_localized_schedule_label(self._params.get('PreferredSchedule'))),
         self._on_schedule,
         emphasized=False,
       )
@@ -612,9 +612,9 @@ class StarPilotMapsLayout(_SettingsPage):
   def _selected_summary_text(self) -> str:
     count = self._selected_count()
     if count == 0:
-      return tr("No regions selected")
+      return tr("未选择地区")
     if US_COUNTRY_TOKEN in self._selected_tokens():
-      return tr("Whole U.S. (56 states)")
+      return tr("全美国（56 州）")
     return trn("{} region selected", "{} regions selected", count).format(count)
 
   def _selected_primary_token(self) -> str | None:
@@ -628,19 +628,19 @@ class StarPilotMapsLayout(_SettingsPage):
     if not token:
       return ""
     if token == US_COUNTRY_TOKEN:
-      return tr("Whole U.S.")
+      return tr("全美国")
     return tr(MAP_TOKEN_LABELS.get(token, token))
 
   def _selection_preview_text(self) -> str:
     count = self._selected_count()
     if count <= 0:
-      return tr("No regions selected yet")
+      return tr("尚未选择地区")
     if US_COUNTRY_TOKEN in self._selected_tokens():
-      return tr("Whole U.S. package")
+      return tr("全美国包")
     primary_label = self._selected_primary_label()
     if count == 1:
       return primary_label
-    return tr("{} + {} more").format(primary_label, count - 1)
+    return tr("{} + 另外 {} 个").format(primary_label, count - 1)
 
   def _has_full_us_selected(self) -> bool:
     tokens = self._selected_tokens()
@@ -665,7 +665,7 @@ class StarPilotMapsLayout(_SettingsPage):
 
   def _bulk_package_regions(self) -> list[dict]:
     return [
-      {"token": US_COUNTRY_TOKEN, "label": tr("Whole U.S. (All 50 States & Territories)")},
+      {"token": US_COUNTRY_TOKEN, "label": tr("全美国（全部 50 州与领地）")},
       *[
         {"token": key, "label": tr(spec["title"])}
         for key, spec in REGIONAL_PACKAGES.items()
@@ -680,11 +680,11 @@ class StarPilotMapsLayout(_SettingsPage):
       total = len(self._all_us_states_regions())
       selected_count = self._selected_count()
       if self._has_full_us_selected():
-        return tr("Whole U.S. Selected")
+        return tr("已选全美国")
 
     if selected_count <= 0:
-      return tr("{} available - Tap to select").format(total)
-    return tr("{} selected | {} available").format(selected_count, max(0, total - selected_count))
+      return tr("{} 可用 - 点击选择").format(total)
+    return tr("已选 {} | 可用 {}").format(selected_count, max(0, total - selected_count))
 
   def _toggle_region(self, token: str):
     self._set_map_state(token, not self._get_map_state(token))
@@ -697,20 +697,20 @@ class StarPilotMapsLayout(_SettingsPage):
 
   def _region_primary_text(self, token: str) -> str:
     if token == US_COUNTRY_TOKEN:
-      return tr("Master Package - Full country map data")
+      return tr("主包 - 全国地图数据")
     if token in REGIONAL_PACKAGES:
       return tr(REGIONAL_PACKAGES[token]["subtitle"])
     if self._get_map_state(token):
-      return tr("Selected for download")
-    return tr("Tap to select state")
+      return tr("已选下载")
+    return tr("点击选择州")
 
   def _region_action_text(self, token: str) -> str:
     if self._get_map_state(token):
-      return tr("Selected")
-    return tr("Add")
+      return tr("已选")
+    return tr("添加")
 
   def _browse_empty_state(self) -> tuple[str, str]:
-    return tr("No regions available"), tr("Switch sources to keep browsing maps.")
+    return tr("没有可用地区"), tr("切换来源以继续浏览地图。")
 
   def _browse_regions_for_active_view(self) -> tuple[list[dict], list[dict]]:
     """Partition active view regions into (downloaded_on_device, available_for_download)."""
@@ -806,11 +806,11 @@ class StarPilotMapsLayout(_SettingsPage):
   def _download_gate_reason(self) -> str:
     reasons = []
     if self._download_in_flight():
-      reasons.append(tr("Download in progress"))
+      reasons.append(tr("下载进行中"))
     if not self._is_online():
-      reasons.append(tr("Connect to the internet"))
+      reasons.append(tr("连接到互联网"))
     if not self._is_parked():
-      reasons.append(tr("Park the vehicle to download"))
+      reasons.append(tr("停车以进行下载"))
     return "\n".join(reasons) if reasons else ""
 
   def _primary_action_enabled(self) -> bool:
@@ -822,18 +822,18 @@ class StarPilotMapsLayout(_SettingsPage):
 
   def _primary_action_label(self) -> str:
     if self._is_visually_cancelling():
-      return tr("Cancelling...")
+      return tr("取消中…")
     if self._download_in_flight():
-      return tr("Cancel Download")
+      return tr("取消下载")
     if self._selected_count() == 0:
-      return tr("Select Regions Below")
-    return tr("Download Offline Maps")
+      return tr("在下方选择地区")
+    return tr("下载离线地图")
 
   def _on_primary_action(self):
     if self._download_in_flight():
       self._on_cancel()
     elif self._selected_count() == 0:
-      gui_app.push_widget(alert_dialog(tr("Please select 'Whole U.S.' or pick individual states from the list below.")))
+      gui_app.push_widget(alert_dialog(tr("请选择「全美国」或从下方列表挑选单个州。")))
     else:
       self._on_download()
 
@@ -849,7 +849,7 @@ class StarPilotMapsLayout(_SettingsPage):
         if selected_value is not None:
           self._params.put_int("PreferredSchedule", selected_value)
 
-    dialog = MultiOptionDialog(tr("Auto Update Schedule"), options, current, callback=on_select)
+    dialog = MultiOptionDialog(tr("自动更新计划"), options, current, callback=on_select)
     gui_app.push_widget(dialog)
 
   def _on_download(self):
@@ -863,7 +863,7 @@ class StarPilotMapsLayout(_SettingsPage):
     if selected_raw != current_selected:
       self._params.put("MapsSelected", selected_raw)
     if not selected_raw:
-      gui_app.push_widget(alert_dialog(tr("Please select 'Whole U.S.' or pick individual states from the list below.")))
+      gui_app.push_widget(alert_dialog(tr("请选择「全美国」或从下方列表挑选单个州。")))
       return
 
     def on_confirm(res):
@@ -876,7 +876,7 @@ class StarPilotMapsLayout(_SettingsPage):
         self._params_memory.remove("CancelDownloadMaps")
         self._download_started_at = rl.get_time()
 
-    gui_app.push_widget(ConfirmDialog(tr("Start downloading offline maps for the selected regions?"), tr("Download"), callback=on_confirm))
+    gui_app.push_widget(ConfirmDialog(tr("开始为所选地区下载离线地图？"), tr("下载"), callback=on_confirm))
 
   def _on_cancel(self):
     def on_confirm(res):
@@ -890,19 +890,19 @@ class StarPilotMapsLayout(_SettingsPage):
         self._cancel_requested_at = rl.get_time()
         self._cancel_visual_until = rl.get_time() + 2.5
 
-    gui_app.push_widget(ConfirmDialog(tr("Cancel the current map download?"), tr("Cancel Download"), callback=on_confirm))
+    gui_app.push_widget(ConfirmDialog(tr("取消当前地图下载？"), tr("取消下载"), callback=on_confirm))
 
   def _on_remove(self):
     if not self._remove_enabled():
       if not self._is_parked():
-        gui_app.push_widget(alert_dialog(tr("Park to remove downloaded maps.")))
+        gui_app.push_widget(alert_dialog(tr("停车以移除已下载地图。")))
       return
 
     def on_confirm(res):
       if res == DialogResult.CONFIRM:
         if not self._remove_enabled():
           if not self._is_parked():
-            gui_app.push_widget(alert_dialog(tr("Park to remove downloaded maps.")))
+            gui_app.push_widget(alert_dialog(tr("停车以移除已下载地图。")))
           return
 
         def remove_worker():
@@ -915,26 +915,26 @@ class StarPilotMapsLayout(_SettingsPage):
           self._storage_updated_at = 0.0
 
         threading.Thread(target=remove_worker, daemon=True).start()
-        gui_app.push_widget(alert_dialog(tr("Removing offline maps...")))
+        gui_app.push_widget(alert_dialog(tr("正在移除离线地图…")))
 
-    gui_app.push_widget(ConfirmDialog(tr("Delete all downloaded offline map data?"), tr("Remove Maps"), callback=on_confirm))
+    gui_app.push_widget(ConfirmDialog(tr("删除所有已下载的离线地图数据？"), tr("移除地图"), callback=on_confirm))
 
   def _last_updated_text(self) -> str:
     last_update = self._worker_params.get("LastMapsUpdate", encoding="utf-8")
-    return last_update or tr("Never")
+    return last_update or tr("从不")
 
   def _progress_title(self) -> str:
     if self._is_visually_cancelling():
-      return tr("Cancelling Download")
+      return tr("正在取消下载")
     if self._download_state.active:
-      return tr("Downloading Maps")
+      return tr("正在下载地图")
     if self._download_requested():
-      return tr("Starting Download")
+      return tr("开始下载")
     if self._has_downloaded_data:
-      return tr("Offline Maps")
+      return tr("离线地图")
     if self._selected_count() == 0:
-      return tr("Select Map Data")
-    return tr("Download Readiness")
+      return tr("选择地图数据")
+    return tr("下载就绪")
 
   def _progress_body(self) -> str:
     if self._download_state.active:
@@ -942,8 +942,8 @@ class StarPilotMapsLayout(_SettingsPage):
       elapsed_text = _format_elapsed_ms(elapsed_ms)
       eta_text = _format_eta_ms(elapsed_ms, self._download_state.downloaded_files, self._download_state.total_files)
       if self._download_state.primary_location:
-        return tr("{}\nElapsed {} | ETA {}").format(self._download_state.progress_text, elapsed_text, eta_text)
-      return tr("{} / {} ({}%)\nElapsed {} | ETA {}").format(
+        return tr("{}\n已用 {} | 预计 {}").format(self._download_state.progress_text, elapsed_text, eta_text)
+      return tr("{} / {} ({}%)\n已用 {} | 预计 {}").format(
         self._download_state.downloaded_files,
         self._download_state.total_files,
         self._download_state.percent,
@@ -952,16 +952,16 @@ class StarPilotMapsLayout(_SettingsPage):
       )
 
     if self._is_visually_cancelling():
-      return tr("Stop request sent. The current transfer will wind down safely.")
+      return tr("已发送停止请求。当前传输将安全结束。")
 
     if self._download_requested():
-      return tr("Preparing the selected regions for download.")
+      return tr("正在准备所选地区的下载。")
 
     if self._selected_count() == 0:
-      return tr("No regions selected yet. Tap 'Whole U.S.' or pick specific states below to get started.")
+      return tr("尚未选择地区。点击「全美国」或在下方挑选特定州开始。")
 
     gate_reason = self._download_gate_reason()
     if gate_reason:
       return gate_reason
 
-    return tr("Ready to download {}.").format(self._selection_preview_text())
+    return tr("准备下载 {}。").format(self._selection_preview_text())

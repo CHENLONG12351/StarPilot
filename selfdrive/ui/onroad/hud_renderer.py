@@ -70,6 +70,17 @@ class HudRenderer(Widget):
     self.set_speed: float = SET_SPEED_NA
     self.speed: float = 0.0
     self.v_ego_cluster_seen: bool = False
+    self.gear_text: str = "–"
+    self._prndl_raw: int = -1
+    self._manual_mode: int = 0
+    self._last_auto_base: str = "D"
+    self._engine_rpm: float = 0.0
+    self._base_gear: str | None = None
+    self._calib_samples: list = []
+    try:
+      self._gear_ratio_k: float = float(ui_state.params.get("GearRatioK", encoding="utf8") or 0)
+    except Exception:
+      self._gear_ratio_k = 0.0
 
     self._font_semi_bold: rl.Font = gui_app.font(FontWeight.SEMI_BOLD)
     self._font_bold: rl.Font = gui_app.font(FontWeight.BOLD)
@@ -89,6 +100,7 @@ class HudRenderer(Widget):
       self.is_cruise_set = False
       self.set_speed = SET_SPEED_NA
       self.speed = 0.0
+      self.gear_text = "–"
       return
 
     controls_state = sm['controlsState']
@@ -117,6 +129,49 @@ class HudRenderer(Widget):
     speed_conversion = CV.MS_TO_KPH if ui_state.is_metric else CV.MS_TO_MPH
     self.speed = max(0.0, v_ego * speed_conversion)
 
+    # raw decode: PRNDL2 (addr 501) and engine RPM (addr 201) from CAN
+    for c in sm["can"]:
+      if c.address == 501 and len(c.dat) >= 6:
+        self._prndl_raw = c.dat[3] & 0xF
+        self._manual_mode = (c.dat[5] >> 1) & 1
+      elif c.address == 201 and len(c.dat) >= 2:
+        self._engine_rpm = ((c.dat[1] << 8) | c.dat[0]) * 0.25
+
+    gear = str(car_state.gearShifter).replace("GearShifter.", "").lower()
+    self._base_gear = {"park": "P", "reverse": "R", "neutral": "N", "drive": "D", "low": "L"}.get(gear, None)
+    self.gear_text = self._base_gear if self._base_gear else "–"
+
+    if self._base_gear in ("P", "R", "N", "D", "L"):
+      self._last_auto_base = self._base_gear
+
+    raw = self._prndl_raw
+    if self._manual_mode and 5 <= raw <= 13:
+      # ECMPRDNL2 ManualMode ladder: raw 13=1st gear ... 5=9th gear (9AT);
+      # only valid with ManualMode=1, otherwise plain L reports raw=6
+      prefix = "L" if self._last_auto_base == "L" else "D"
+      self.gear_text = f"{prefix}{14 - raw}"
+    elif self._base_gear == "D" and self._gear_ratio_k > 0 and self._engine_rpm > 1100 and v_ego > 5.5:
+      # automatic D: estimate engaged gear from rpm / speed transmission ratio
+      ratio = self._engine_rpm / v_ego
+      num = self._gear_from_ratio(ratio)
+      if num:
+        self.gear_text = f"D{num}"
+    elif self._base_gear == "D" and self._gear_ratio_k <= 0 and self._engine_rpm > 1100 and v_ego > 8.0:
+      # collect calibration samples until GearRatioK is set
+      self._calib_samples.append((round(v_ego, 2), round(self._engine_rpm)))
+      if len(self._calib_samples) >= 400 and len(self._calib_samples) % 400 == 0:
+        try:
+          import json as _json
+          prev = []
+          try:
+            prev = _json.load(open("/data/gear_calib.json"))
+          except Exception:
+            prev = []
+          _json.dump((prev + self._calib_samples)[-8000:], open("/data/gear_calib.json", "w"))
+          self._calib_samples = []
+        except Exception:
+          pass
+
   def _render(self, rect: rl.Rectangle) -> None:
     """Render HUD elements to the screen."""
     # Draw the header background
@@ -131,6 +186,9 @@ class HudRenderer(Widget):
 
     if self.draw_set_speed and self.is_cruise_available and not ui_state.starpilot_toggles.get("hide_max_speed", False):
       self._draw_set_speed(rect)
+
+    if self.gear_text != "–":
+      self._draw_gear(rect)
 
     if self.draw_current_speed and not ui_state.starpilot_toggles.get("hide_speed", False):
       self._draw_current_speed(rect)
@@ -185,6 +243,56 @@ class HudRenderer(Widget):
       FONT_SIZES.set_speed,
       0,
       set_speed_color,
+    )
+
+  _GEAR_RATIOS = (4.69, 2.99, 2.19, 1.69, 1.32, 1.02, 0.85, 0.69, 0.64)  # GM 9T45/9T50
+
+  def _gear_from_ratio(self, ratio: float) -> int | None:
+    if self._gear_ratio_k <= 0:
+      return None
+    target = ratio / self._gear_ratio_k
+    best, best_err = None, 1e9
+    for i, r in enumerate(self._GEAR_RATIOS):
+      err = abs(target - r) / r
+      if err < best_err:
+        best, best_err = i + 1, err
+    return best if best_err < 0.07 else None
+
+  def _draw_gear(self, rect: rl.Rectangle) -> None:
+    """Draw the current gear position box to the right of the MAX speed box."""
+    width = UI_CONFIG.set_speed_width_metric if ui_state.is_metric else UI_CONFIG.set_speed_width_imperial
+    set_speed_x = rect.x + WIDGET_ANCHOR_OFFSET - width / 2
+    x = set_speed_x + width + 24
+    y = rect.y + 45
+
+    gear_rect = rl.Rectangle(x, y, width, UI_CONFIG.set_speed_height)
+    draw_control_card(gear_rect)
+
+    color = COLORS.WHITE
+    if self.gear_text == "R":
+      color = rl.Color(255, 120, 120, 255)
+    elif self.gear_text in ("P", "N"):
+      color = COLORS.GREY
+
+    gear_label = "档位"
+    label_width = measure_text_cached(self._font_semi_bold, gear_label, FONT_SIZES.max_speed).x
+    rl.draw_text_ex(
+      self._font_semi_bold,
+      gear_label,
+      rl.Vector2(x + (width - label_width) / 2, y + 27),
+      FONT_SIZES.max_speed,
+      0,
+      COLORS.GREY,
+    )
+
+    letter_width = measure_text_cached(self._font_bold, self.gear_text, FONT_SIZES.set_speed).x
+    rl.draw_text_ex(
+      self._font_bold,
+      self.gear_text,
+      rl.Vector2(x + (width - letter_width) / 2, y + 77),
+      FONT_SIZES.set_speed,
+      0,
+      color,
     )
 
   def _draw_current_speed(self, rect: rl.Rectangle) -> None:

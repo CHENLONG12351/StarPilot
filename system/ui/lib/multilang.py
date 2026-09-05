@@ -177,7 +177,7 @@ class Multilang:
 
   def change_language(self, language_code: str) -> None:
     self._params.put("LanguageSetting", language_code)
-    self._language = language_code
+    self._language = language_code.removeprefix("main_")
     self.setup()
 
   def tr(self, text: str) -> str:
@@ -194,7 +194,7 @@ class Multilang:
   def _load_languages(self):
     with LANGUAGES_FILE.open(encoding='utf-8') as f:
       self.languages = json.load(f)
-    self.codes = {v: k for k, v in self.languages.items()}
+    self.codes = {v.removeprefix("main_"): k for k, v in self.languages.items()}
 
     if self._params is not None:
       lang = str(self._params.get("LanguageSetting")).removeprefix("main_")

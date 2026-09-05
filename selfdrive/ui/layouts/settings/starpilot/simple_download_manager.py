@@ -250,7 +250,7 @@ class SimpleDownloadManager(Widget):
 
   def _cancel_download(self):
     self.params_memory.put_bool("CancelThemeDownload", True)
-    self._info_message = tr("Cancelling...")
+    self._info_message = tr("正在取消…")
     self._info_message_until = time.monotonic() + 5.0
 
   def _close(self, result: DialogResult, value=None):
@@ -502,7 +502,7 @@ class SimpleDownloadManager(Widget):
           prog_rect.x + prog_rect.width - cancel_w - 24, cancel_y, float(cancel_w), float(cancel_h)))
         cancel_hovered = self._pressed_target == "cancel_download"
         draw_action_pill(
-          self._cancel_rect, tr("CANCEL"),
+          self._cancel_rect, tr("取消"),
           with_alpha(AetherListColors.DANGER, 50 if cancel_hovered else 30),
           with_alpha(AetherListColors.DANGER, 100),
           AetherListColors.HEADER, font_size=24,
@@ -523,7 +523,7 @@ class SimpleDownloadManager(Widget):
                        radius=0.03, segments=18)
 
         confirm_font = gui_app.font(FontWeight.MEDIUM)
-        confirm_msg = tr("Delete \"{name}\"?").format(name=self._confirm_target)
+        confirm_msg = tr("删除 {name}？").format(name=self._confirm_target)
         draw_text_fit_common(
           confirm_font, confirm_msg,
           rl.Vector2(confirm_rect.x + 24, confirm_rect.y + 32),
@@ -541,11 +541,11 @@ class SimpleDownloadManager(Widget):
         no_hovered = self._pressed_target == "confirm_no"
         yes_hovered = self._pressed_target == "confirm_yes"
 
-        draw_action_pill(self._confirm_no_rect, tr("CANCEL"),
+        draw_action_pill(self._confirm_no_rect, tr("取消"),
                          with_alpha(rl.Color(255, 255, 255, 14 if no_hovered else 8), 255),
                          with_alpha(rl.Color(255, 255, 255, 36), 255),
                          AetherListColors.SUBTEXT, font_size=24)
-        draw_action_pill(self._confirm_yes_rect, tr("DELETE"),
+        draw_action_pill(self._confirm_yes_rect, tr("删除"),
                          with_alpha(AetherListColors.DANGER, 60 if yes_hovered else 36),
                          with_alpha(AetherListColors.DANGER, 120),
                          AetherListColors.HEADER, font_size=24)
@@ -577,19 +577,19 @@ class SimpleDownloadManager(Widget):
         row_border = AetherListColors.ROW_BORDER
 
         if is_current:
-          action_text = tr("Current")
+          action_text = tr("当前")
           action_fill = AetherListColors.CURRENT_BG
           action_border = AetherListColors.CURRENT_BORDER
           action_text_color = AetherListColors.HEADER
 
         if is_deleting:
-          action_text = tr("DELETE")
+          action_text = tr("删除")
           action_fill = with_alpha(AetherListColors.DANGER, 30)
           action_border = with_alpha(AetherListColors.DANGER, 80)
           action_text_color = AetherListColors.DANGER
 
         if is_downloading_mode:
-          action_text = tr("DOWNLOAD")
+          action_text = tr("下载")
           action_fill = with_alpha(AetherListColors.SUCCESS, 30)
           action_border = with_alpha(AetherListColors.SUCCESS, 80)
           action_text_color = AetherListColors.SUCCESS
@@ -637,11 +637,11 @@ class SimpleDownloadManager(Widget):
   def _empty_state_text(self) -> dict:
     at = self.asset_type
     if self._active_mode == self.MODE_SELECT:
-      return {"title": tr("No {name}s").format(name=at.title()), "body": tr("Download {name}s to see them here.").format(name=at)}
+      return {"title": tr("没有 {name}").format(name=at.title()), "body": tr("下载 {name} 后在此查看。").format(name=at)}
     if self._active_mode == self.MODE_DELETE:
-      return {"title": tr("Nothing to Delete"), "body": tr("No {name}s are currently downloaded.").format(name=at)}
+      return {"title": tr("没有可删除的"), "body": tr("当前未下载任何 {name}。").format(name=at)}
     if self._active_mode == self.MODE_DOWNLOAD:
       if self._downloading:
         return {"title": "", "body": ""}
-      return {"title": tr("All Available"), "body": tr("You have all available {name}s.").format(name=at)}
+      return {"title": tr("全部可用"), "body": tr("你已拥有所有可用的 {name}。").format(name=at)}
     return {"title": "", "body": ""}

@@ -99,7 +99,7 @@ class SoundsManagerView(AdjustorTogglesPanelView):
         on_change=lambda _v: None,
         on_commit=None,
         unit="%",
-        labels={0.0: tr("Muted"), 101.0: tr("Auto")},
+        labels={0.0: tr("静音"), 101.0: tr("自动")},
         presets=[p for p in [0, 25, 50, 75, 101] if p >= info["min"]],
         is_active=lambda: False,
         set_active=lambda active, k=key: self._show_volume_slider(k) if active else None,
@@ -121,8 +121,8 @@ class SoundsManagerView(AdjustorTogglesPanelView):
       get_value=lambda: float(self._controller._params.get_int(cd_key, return_default=True, default=0)),
       on_change=lambda _v: None,
       on_commit=None,
-      unit=" " + tr("min"),
-      labels={0.0: tr("Off"), 1.0: tr("1 min")},
+      unit=" " + tr("分钟"),
+      labels={0.0: tr("关闭"), 1.0: tr("1 分钟")},
       presets=[0, 1, 5, 10, 20, 30],
       is_active=lambda: False,
       set_active=lambda active: gui_app.push_widget(
@@ -134,8 +134,8 @@ class SoundsManagerView(AdjustorTogglesPanelView):
           current_val=float(self._controller._params.get_int(cd_key, return_default=True, default=0)),
           on_close=on_cd_close,
           presets=[0.0, 1.0, 5.0, 10.0, 20.0, 30.0],
-          unit=" " + tr("min"),
-          labels={0.0: tr("Off"), 1.0: tr("1 min")},
+          unit=" " + tr("分钟"),
+          labels={0.0: tr("关闭"), 1.0: tr("1 分钟")},
           color=PANEL_STYLE.accent,
         )
       ) if active else None,
@@ -177,7 +177,7 @@ class SoundsManagerView(AdjustorTogglesPanelView):
         on_close=on_close,
         presets=[float(p) for p in [0, 25, 50, 75, 101] if p >= min_v],
         unit="%",
-        labels={0.0: tr("Muted"), 101.0: tr("Auto")},
+        labels={0.0: tr("静音"), 101.0: tr("自动")},
         color=PANEL_STYLE.accent,
         on_change=on_change,
       )
@@ -239,7 +239,7 @@ class SoundsManagerView(AdjustorTogglesPanelView):
     current_y = y + 4
 
     label_rect = rl.Rectangle(x + 24, current_y, width - 48, 24)
-    gui_label(label_rect, tr("Reset All"), 24, AetherListColors.MUTED, FontWeight.NORMAL,
+    gui_label(label_rect, tr("全部重置"), 24, AetherListColors.MUTED, FontWeight.NORMAL,
               alignment=rl.GuiTextAlignment.TEXT_ALIGN_RIGHT)
     self._reset_rect = rl.Rectangle(label_rect.x + label_rect.width - 140, label_rect.y, 140, 24)
     self._interactive_rects["action:restore_defaults"] = self._reset_rect
@@ -255,7 +255,7 @@ class SoundsManagerView(AdjustorTogglesPanelView):
 
   def _draw_utility_column(self, y: float, x: float, width: float):
     draw_list_group_shell(rl.Rectangle(x, y, width, self._tiles_container_h), style=PANEL_STYLE)
-    header_y = draw_group_header(x + 24, y + 4, width - 48, tr("Alerts"))
+    header_y = draw_group_header(x + 24, y + 4, width - 48, tr("提醒"))
     avail_h = self._tiles_container_h - (header_y - y)
     self._render_page_grid(self._toggle_grid, rl.Rectangle(x + 12, header_y, width - 24, max(0.0, avail_h - 12)))
 
@@ -281,20 +281,20 @@ class StarPilotSoundsLayout(_SettingsPage):
   ]
 
   COOLDOWN_INFO = {
-    "title": tr_noop("Switchback Cooldown"),
+    "title": tr_noop("回摆冷却"),
     "subtitle": "",
     "min": 0,
     "max": 30,
   }
   VOLUME_INFO = {
-    "WarningImmediateVolume": {"title": tr_noop("Immediate Warning"), "subtitle": "", "min": 25},
-    "WarningSoftVolume": {"title": tr_noop("Soft Warning"), "subtitle": "", "min": 25},
-    "RefuseVolume": {"title": tr_noop("Engagement Refused"), "subtitle": "", "min": 0},
-    "PromptDistractedVolume": {"title": tr_noop("Distracted Driver"), "subtitle": "", "min": 0},
-    "EngageVolume": {"title": tr_noop("Engagement Chime"), "subtitle": "", "min": 0},
-    "DisengageVolume": {"title": tr_noop("Disengagement Alert"), "subtitle": "", "min": 0},
-    "PromptVolume": {"title": tr_noop("General Prompt"), "subtitle": "", "min": 0},
-    "BelowSteerSpeedVolume": {"title": tr_noop("Low Speed Alert"), "subtitle": "", "min": 0},
+    "WarningImmediateVolume": {"title": tr_noop("立即警告"), "subtitle": "", "min": 25},
+    "WarningSoftVolume": {"title": tr_noop("柔和警告"), "subtitle": "", "min": 25},
+    "RefuseVolume": {"title": tr_noop("接管被拒"), "subtitle": "", "min": 0},
+    "PromptDistractedVolume": {"title": tr_noop("分心驾驶"), "subtitle": "", "min": 0},
+    "EngageVolume": {"title": tr_noop("接管提示音"), "subtitle": "", "min": 0},
+    "DisengageVolume": {"title": tr_noop("退出提示音"), "subtitle": "", "min": 0},
+    "PromptVolume": {"title": tr_noop("通用提示"), "subtitle": "", "min": 0},
+    "BelowSteerSpeedVolume": {"title": tr_noop("低速提醒"), "subtitle": "", "min": 0},
   }
 
   _sound_player_process = None
@@ -305,32 +305,32 @@ class StarPilotSoundsLayout(_SettingsPage):
 
     self.ALERT_INFO = {
       "GreenLightAlert": {
-        "title": tr_noop("Green Light"),
+        "title": tr_noop("绿灯"),
         "subtitle": "",
       },
       "LeadDepartingAlert": {
-        "title": tr_noop("Lead Departure"),
+        "title": tr_noop("前车离开"),
         "subtitle": "",
       },
       "LoudBlindspotAlert": {
-        "title": tr_noop("Loud Blindspot"),
+        "title": tr_noop("大声盲区提醒"),
         "subtitle": "",
         "is_enabled": lambda: starpilot_state.car_state.hasBSM,
-        "disabled_label": tr_noop("Needs BSM")
+        "disabled_label": tr_noop("需要盲区监测")
       },
       "LoudBlindspotAlertWhenDisengaged": {
-        "title": tr_noop("Loud While Paused"),
+        "title": tr_noop("暂停时大声"),
         "subtitle": "",
         "is_enabled": lambda: starpilot_state.car_state.hasBSM,
-        "disabled_label": tr_noop("Needs BSM")
+        "disabled_label": tr_noop("需要盲区监测")
       },
       "SpeedLimitChangedAlert": {
-        "title": tr_noop("Speed Limit"),
+        "title": tr_noop("限速"),
         "subtitle": "",
         "is_enabled": lambda: self._params.get_bool("ShowSpeedLimits") or (
           starpilot_state.car_state.hasOpenpilotLongitudinal and self._params.get_bool("SpeedLimitController")
         ),
-        "disabled_label": tr_noop("Needs Speed Limits")
+        "disabled_label": tr_noop("需要限速数据")
       },
     }
 

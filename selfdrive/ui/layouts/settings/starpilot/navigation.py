@@ -333,13 +333,13 @@ class StarPilotNavigationLayout(_SettingsPage):
       if kind == "search":
         if isinstance(payload, Exception):
           self._search_results = []
-          self._search_error = tr("Search is unavailable. Check your connection and try again.")
+          self._search_error = tr("搜索不可用。检查连接后重试。")
         else:
           self._search_results = payload
           self._search_error = ""
       elif kind == "resolve":
         if isinstance(payload, Exception):
-          self._search_error = tr("Could not determine that location. Try another result.")
+          self._search_error = tr("无法确定该位置。请尝试其他结果。")
         elif isinstance(payload, SearchResult):
           self._select_search_result(payload)
 
@@ -377,7 +377,7 @@ class StarPilotNavigationLayout(_SettingsPage):
 
   def _open_search_keyboard(self):
     self._keyboard.reset(min_text_size=3)
-    self._keyboard.set_title(tr("Search destination"), tr("Enter a place or address"))
+    self._keyboard.set_title(tr("搜索目的地"), tr("输入地点或地址"))
     self._keyboard.set_text(self._query)
     self._keyboard.set_callback(self._on_search_keyboard_result)
     gui_app.push_widget(self._keyboard)
@@ -395,12 +395,12 @@ class StarPilotNavigationLayout(_SettingsPage):
     self._draft_destination = None
     self._selected_favorite = None
     if len(self._query) < 3:
-      self._search_error = tr("Enter at least 3 characters to search.")
+      self._search_error = tr("至少输入 3 个字符进行搜索。")
       return
 
     public_key = self._public_mapbox_key()
     if not public_key:
-      self._search_error = tr("Mapbox search is not configured on this device.")
+      self._search_error = tr("此设备未配置 Mapbox 搜索。")
       return
 
     generation = self._search_generation
@@ -430,7 +430,7 @@ class StarPilotNavigationLayout(_SettingsPage):
       return
 
     if not result.mapbox_id or not self._public_mapbox_key():
-      self._search_error = tr("That result did not include a usable location.")
+      self._search_error = tr("该结果不含可用位置。")
       return
 
     self._search_generation += 1
@@ -457,7 +457,7 @@ class StarPilotNavigationLayout(_SettingsPage):
   def _select_destination(self, payload: dict[str, Any], favorite: dict[str, Any] | None = None):
     destination = normalize_destination_payload(payload)
     if destination is None:
-      self._search_error = tr("That destination is missing a valid location.")
+      self._search_error = tr("该目的地缺少有效位置。")
       return
     if payload.get("routeId"):
       destination["routeId"] = payload["routeId"]
@@ -500,7 +500,7 @@ class StarPilotNavigationLayout(_SettingsPage):
       return
     favorite_id = favorite.get("id")
     self._keyboard.reset(min_text_size=1)
-    self._keyboard.set_title(tr("Rename favorite"), tr("Choose a short name"))
+    self._keyboard.set_title(tr("重命名收藏"), tr("选择一个简短名称"))
     self._keyboard.set_text(str(favorite.get("name") or ""))
 
     def on_result(result: DialogResult):
@@ -526,8 +526,8 @@ class StarPilotNavigationLayout(_SettingsPage):
 
     gui_app.push_widget(
       ConfirmDialog(
-        tr("Remove {} from favorites?").format(favorite.get("name") or tr("this destination")),
-        tr("Remove"),
+        tr("从收藏移除 {}？").format(favorite.get("name") or tr("此目的地")),
+        tr("移除"),
         callback=on_result,
       )
     )
@@ -536,7 +536,7 @@ class StarPilotNavigationLayout(_SettingsPage):
     if self._draft_destination is None or not self._routing_available():
       return
     if self._store.set_destination(self._draft_destination) is None:
-      self._search_error = tr("That destination is not valid.")
+      self._search_error = tr("该目的地无效。")
       return
     self._draft_destination = None
     self._selected_favorite = None
@@ -600,8 +600,8 @@ class StarPilotNavigationLayout(_SettingsPage):
     ]
     if favorite:
       definitions.extend([
-        ("action:rename", tr("Rename"), True, False),
-        ("action:remove", tr("Remove"), True, True),
+        ("action:rename", tr("重命名"), True, False),
+        ("action:remove", tr("移除"), True, True),
       ])
     return definitions
 
@@ -638,15 +638,15 @@ class StarPilotNavigationLayout(_SettingsPage):
 
   def _draw_summary_row(self, rect: rl.Rectangle, manager: NavigationManagerView) -> None:
     if self._draft_destination is not None:
-      title = tr("Ready to navigate")
+      title = tr("准备导航")
       subtitle = str(self._draft_destination.get("place_name") or self._draft_destination.get("name") or "")
-      action_text = tr("Start") if self._routing_available() else tr("Unavailable")
+      action_text = tr("开始") if self._routing_available() else tr("不可用")
       target_id = "action:start"
       current = False
     else:
-      title = tr("Navigation active")
+      title = tr("导航进行中")
       subtitle = str(self._active_destination.get("place_name") or self._active_destination.get("name") or "")
-      action_text = tr("Cancel")
+      action_text = tr("取消")
       target_id = "action:cancel"
       current = True
 
@@ -686,9 +686,9 @@ class StarPilotNavigationLayout(_SettingsPage):
     search_hovered, search_pressed = manager._interactive_state("action:search", search_rect, pad_y=4)
     draw_selection_list_row(
       search_rect,
-      title=self._query or tr("Search for a destination"),
-      subtitle=tr("Use the on-device keyboard to search Mapbox locations"),
-      action_text=tr("Search"),
+      title=self._query or tr("搜索目的地"),
+      subtitle=tr("使用设备键盘搜索 Mapbox 位置"),
+      action_text=tr("搜索"),
       hovered=search_hovered,
       pressed=search_pressed,
       is_last=False,
@@ -706,8 +706,8 @@ class StarPilotNavigationLayout(_SettingsPage):
     if self._search_loading:
       draw_empty_state_card(
         rl.Rectangle(x, y, width, NAV_EMPTY_HEIGHT),
-        tr("Searching…"),
-        tr("Looking up destinations"),
+        tr("搜索中…"),
+        tr("正在查找目的地"),
         title_size=30,
         body_size=22,
         border=with_alpha(PANEL_STYLE.surface_border, 14),
@@ -717,7 +717,7 @@ class StarPilotNavigationLayout(_SettingsPage):
     elif self._search_error:
       draw_empty_state_card(
         rl.Rectangle(x, y, width, NAV_EMPTY_HEIGHT),
-        tr("Search unavailable"),
+        tr("搜索不可用"),
         self._search_error,
         title_size=30,
         body_size=22,
@@ -737,7 +737,7 @@ class StarPilotNavigationLayout(_SettingsPage):
     if self._search_results:
       draw_section_header(
         rl.Rectangle(x, y, width, NAV_SECTION_HEIGHT),
-        tr("Search results"),
+        tr("搜索结果"),
         trailing_text=str(len(self._search_results)),
         title_size=30,
         trailing_size=24,
@@ -751,8 +751,8 @@ class StarPilotNavigationLayout(_SettingsPage):
         draw_selection_list_row(
           row_rect,
           title=result.name,
-          subtitle=result.subtitle or tr("Destination"),
-          action_text=tr("Select"),
+          subtitle=result.subtitle or tr("目的地"),
+          action_text=tr("选择"),
           current=self._same_destination(self._draft_destination, result.to_destination()) if result.has_coordinates else False,
           hovered=hovered,
           pressed=pressed,
@@ -772,7 +772,7 @@ class StarPilotNavigationLayout(_SettingsPage):
     if self._favorites:
       draw_section_header(
         rl.Rectangle(x, y, width, NAV_SECTION_HEIGHT),
-        tr("Favorite destinations"),
+        tr("收藏目的地"),
         trailing_text=str(len(self._favorites)),
         title_size=30,
         trailing_size=24,
@@ -786,14 +786,14 @@ class StarPilotNavigationLayout(_SettingsPage):
         hovered, pressed = manager._interactive_state(target_id, row_rect)
         badges = []
         if favorite.get("is_home"):
-          badges.append(tr("Home"))
+          badges.append(tr("家"))
         if favorite.get("is_work"):
-          badges.append(tr("Work"))
+          badges.append(tr("公司"))
         draw_selection_list_row(
           row_rect,
-          title=str(favorite.get("name") or tr("Unnamed favorite")),
-          subtitle=" • ".join(badges) or tr("Favorite destination"),
-          action_text=tr("Select"),
+          title=str(favorite.get("name") or tr("未命名收藏")),
+          subtitle=" • ".join(badges) or tr("收藏目的地"),
+          action_text=tr("选择"),
           current=self._same_destination(self._draft_destination, favorite),
           hovered=hovered,
           pressed=pressed,
@@ -813,7 +813,7 @@ class StarPilotNavigationLayout(_SettingsPage):
     if self._recent_destinations:
       draw_section_header(
         rl.Rectangle(x, y, width, NAV_SECTION_HEIGHT),
-        tr("Recent destinations"),
+        tr("最近目的地"),
         trailing_text=str(len(self._recent_destinations)),
         title_size=30,
         trailing_size=24,
@@ -826,9 +826,9 @@ class StarPilotNavigationLayout(_SettingsPage):
         hovered, pressed = manager._interactive_state(target_id, row_rect)
         draw_selection_list_row(
           row_rect,
-          title=str(recent.get("place_name") or recent.get("name") or tr("Recent destination")),
-          subtitle=tr("Recent destination"),
-          action_text=tr("Select"),
+          title=str(recent.get("place_name") or recent.get("name") or tr("最近目的地")),
+          subtitle=tr("最近目的地"),
+          action_text=tr("选择"),
           current=self._same_destination(self._draft_destination, recent),
           hovered=hovered,
           pressed=pressed,
@@ -845,8 +845,8 @@ class StarPilotNavigationLayout(_SettingsPage):
         y += NAV_ROW_HEIGHT
 
     if not self._search_results and not self._favorites and not self._recent_destinations and not self._search_loading and not self._search_error:
-      empty_title = tr("No matching destinations") if self._query else tr("No destinations yet")
-      empty_body = tr("Try a different place or address.") if self._query else tr("Search for a place or address to begin.")
+      empty_title = tr("没有匹配的目的地") if self._query else tr("还没有目的地")
+      empty_body = tr("尝试其他地点或地址。") if self._query else tr("搜索地点或地址以开始。")
       draw_empty_state_card(
         rl.Rectangle(x, y, width, NAV_EMPTY_HEIGHT),
         empty_title,

@@ -797,7 +797,7 @@ class StarPilotVariables:
       car_model_name = self.params.get("CarModelName")
       if car_model_name and "2019-21" in car_model_name:
         self.params.put("CarModelName", car_model_name.replace("2019-21", "2018-21"))
-    toggle.force_fingerprint = self.get_value("ForceFingerprint", condition=car_model != self.default_values["CarModel"])
+    toggle.force_fingerprint = self.get_value("ForceFingerprint")  # PATCHED: force persists even when live fingerprint fails (MOCK) - user locked Malibu
     if toggle.force_fingerprint:
       toggle.car_model = car_model
 

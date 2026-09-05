@@ -65,7 +65,7 @@ function formatDuration(seconds) {
 }
 
 function formatDate(value) {
-  if (!value) return "No drives yet";
+  if (!value) return "还没有行程";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return String(value);
   return date.toLocaleString("en-US", {
@@ -77,7 +77,7 @@ function formatDate(value) {
 }
 
 function formatDriveTimeRange(startValue, endValue) {
-  if (!startValue) return "No drives yet";
+  if (!startValue) return "还没有行程";
   const start = new Date(startValue);
   const end = new Date(endValue);
   if (Number.isNaN(start.getTime())) return String(startValue);
@@ -125,7 +125,7 @@ function fallbackDashboard(data, unit) {
       duration: 0,
       avgSpeed: 0,
       engagedPercent: 0,
-      model: "Unknown model",
+      model: "未知车型",
       segmentCount: 0,
       distractedMoments: 0,
       unresponsiveMoments: 0,
@@ -145,13 +145,13 @@ function fallbackDashboard(data, unit) {
     },
     records: {
       longestDrive: { value: "0", detail: unit },
-      mostEngagedDay: { value: "0%", detail: "No drives" },
+      mostEngagedDay: { value: "0%", detail: "暂无行程" },
       bestWeek: { value: "0", detail: unit },
-      highestStreak: { value: "0 days", detail: "No drives" },
-      longestUndistractedDrive: { value: "0.0 hours", detail: "No clean drives" },
-      cleanDriveStreak: { value: "0 drives", detail: "No clean drives" },
+      highestStreak: { value: "0 days", detail: "暂无行程" },
+      longestUndistractedDrive: { value: "0.0 hours", detail: "暂无优质行程" },
+      cleanDriveStreak: { value: "0 drives", detail: "暂无优质行程" },
     },
-    device: { status: "Parked", online: true, uptimeSeconds: null, cpuTempC: null },
+    device: { status: "已停车", online: true, uptimeSeconds: null, cpuTempC: null },
     storage: {
       freeBytes: 0,
       usedBytes: 0,
@@ -226,7 +226,7 @@ function renderLastDrive(drive) {
         <div><strong>${ready ? formatPercent(drive.engagedPercent) : "..."}</strong><span>engaged</span></div>
       </div>
       <div class="dashboard-drive-footer">
-        <span><i class="bi bi-cpu"></i>${escapeHtml(drive.model || "Unknown model")}</span>
+        <span><i class="bi bi-cpu"></i>${escapeHtml(drive.model || "未知车型")}</span>
         ${ready
           ? `<span><i class="bi bi-eye"></i>${formatInt(drive.distractedMoments)} distracted</span>
              <span><i class="bi bi-exclamation-triangle"></i>${formatInt(drive.unresponsiveMoments)} unresponsive</span>`
@@ -288,9 +288,9 @@ function renderRecords(records) {
   return `
     <section class="dashboard-card dashboard-records">
       <h2>Personal records</h2>
-      ${recordRow("bi-arrow-right", "Longest drive", records.longestDrive)}
-      ${recordRow("bi-check2-circle", "Most-engaged day", records.mostEngagedDay)}
-      ${recordRow("bi-graph-up-arrow", "Best week", records.bestWeek)}
+      ${recordRow("bi-arrow-right", "最长行程", records.longestDrive)}
+      ${recordRow("bi-check2-circle", "辅助驾驶最多的一天", records.mostEngagedDay)}
+      ${recordRow("bi-graph-up-arrow", "最佳一周", records.bestWeek)}
       ${recordRow("bi-lightning-charge", "Highest streak", records.highestStreak)}
       ${recordRow("bi-shield-check", "Longest undistracted drive", records.longestUndistractedDrive)}
       ${recordRow("bi-stars", "Clean-drive streak", records.cleanDriveStreak)}
@@ -316,7 +316,7 @@ function renderRecentDrives(drives) {
     <div class="dashboard-drive-row ${ready ? "" : "is-pending"} ${ignored ? "is-ignored" : ""}">
       <div class="dashboard-drive-main">
         <strong>${escapeHtml(formatDriveTimeRange(drive.date, drive.endDate))}</strong>
-        <span>${escapeHtml(drive.model || "Unknown model")}</span>
+        <span>${escapeHtml(drive.model || "未知车型")}</span>
       </div>
       <div class="dashboard-drive-details">
         <span>${ignored && drive.attentionKnown === false ? "Stats excluded" : (ready ? `${formatOneDecimal(drive.distance)} ${escapeHtml(drive.distanceUnit || "miles")}` : "Analyzing stats")}</span>
@@ -432,7 +432,7 @@ function renderVitals(device) {
     <section class="dashboard-card dashboard-device-card">
       <h2>Vitals</h2>
       <div class="dashboard-key-values">
-        <div><span>Status</span><strong>${escapeHtml(device.status || "Parked")}</strong></div>
+        <div><span>Status</span><strong>${escapeHtml(device.status || "已停车")}</strong></div>
         <div><span>LAN IP</span><strong>${escapeHtml(lanIp)}</strong></div>
         <div><span>Network</span><strong>${escapeHtml(networkName)}</strong></div>
         <div><span>Uptime</span><strong>${escapeHtml(uptime)}</strong></div>
@@ -540,7 +540,7 @@ function renderDashboard(state) {
   const dashboard = data.dashboard || fallbackDashboard(data, state.unit);
   const driveStats = data.driveStats || {};
   const device = dashboard.device || {};
-  const status = device.status || "Parked";
+  const status = device.status || "已停车";
   const onlineText = device.online === false ? "device offline" : "device online";
 
   shell.innerHTML = `

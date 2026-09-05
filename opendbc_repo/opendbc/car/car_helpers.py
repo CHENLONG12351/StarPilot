@@ -164,7 +164,7 @@ def _apply_starpilot_access_policy(candidate: str, starpilot_toggles: SimpleName
 
 def can_fingerprint(can_recv: CanRecvCallable) -> tuple[str | None, dict[int, dict]]:
   finger = gen_empty_fingerprint()
-  candidate_cars = {i: all_legacy_fingerprint_cars() for i in [0, 1]}  # attempt fingerprint on both bus 0 and 1
+  candidate_cars = {i: all_legacy_fingerprint_cars() for i in [0, 1, 4, 6]}  # attempt fingerprint on both bus 0 and 1
   frame = 0
   car_fingerprint = None
   done = False

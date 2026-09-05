@@ -28,12 +28,12 @@ def _char_sets():
 
   for language, code in _languages().items():
     unifont.update(language)
-    po_path = TRANSLATIONS_DIR / f"app_{code}.po"
+    po_path = TRANSLATIONS_DIR / f"app_{code.removeprefix('main_')}.po"
     try:
       chars = set(po_path.read_text(encoding="utf-8"))
     except FileNotFoundError:
       continue
-    (unifont if code in UNIFONT_LANGUAGES else base).update(chars)
+    (unifont if code.removeprefix("main_") in UNIFONT_LANGUAGES else base).update(chars)
 
   return tuple(sorted(ord(c) for c in base)), tuple(sorted(ord(c) for c in unifont))
 
@@ -102,7 +102,8 @@ def _process_font(font_path: Path, codepoints: tuple[int, ...]):
   file_buf = rl.ffi.new("unsigned char[]", data)
   cp_buffer = rl.ffi.new("int[]", codepoints)
   cp_ptr = rl.ffi.cast("int *", cp_buffer)
-  glyphs = rl.load_font_data(rl.ffi.cast("unsigned char *", file_buf), len(data), font_size, cp_ptr, len(codepoints), rl.FontType.FONT_DEFAULT)
+  glyph_count = rl.ffi.new("int *")
+  glyphs = rl.load_font_data(rl.ffi.cast("unsigned char *", file_buf), len(data), font_size, cp_ptr, len(codepoints), rl.FontType.FONT_DEFAULT, glyph_count)
   if glyphs == rl.ffi.NULL:
     raise RuntimeError("raylib failed to load font data")
 

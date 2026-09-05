@@ -115,7 +115,7 @@ function loadMapboxGL() {
     const script = document.createElement("script");
     script.src = "https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js";
     script.onload = resolve;
-    script.onerror = () => reject(new Error("Failed to load Mapbox GL"));
+    script.onerror = () => reject(new Error("Mapbox 地图加载失败"));
     document.head.appendChild(script);
   });
   return mapboxLoadPromise;
@@ -208,7 +208,7 @@ function getSuggestionText(suggestion) {
     return splitSuggestionLabel(explicitAddress);
   }
 
-  return { primary: "Unnamed Location", secondary: "" };
+  return { primary: "未命名地点", secondary: "" };
 }
 
 let map;
@@ -633,7 +633,7 @@ export function NavDestination() {
   }
 
   async function selectSuggestion(sugg) {
-    const label = sugg.full_address || sugg.name || sugg.address || "Unnamed Location";
+    const label = sugg.full_address || sugg.name || sugg.address || "未命名地点";
     let coords;
     const savedLatitude = Number(sugg.latitude);
     const savedLongitude = Number(sugg.longitude);
@@ -791,7 +791,7 @@ export function NavDestination() {
                 <div class="keys-required-widget">
                   <div class="keys-required-title">Mapbox Keys Required</div>
                   <p class="keys-required-text">You must set both your public and secret Mapbox keys before using navigation features.</p>
-                  <a href="/manage_navigation_keys" class="keys-required-button">Go to "Manage Keys"</a>
+                  <a href="/manage_navigation_keys" class="keys-required-button">Go to "管理密钥"</a>
                 </div>
               </section>
             `
@@ -799,11 +799,11 @@ export function NavDestination() {
               <div class="map-wrapper">
                 <div class="search-wrapper">
                   <div class="search-controls">
-                    <input autocomplete="off" id="search-field" placeholder="Search here" value="${() => searchFieldState.value}" @input="${searchInput}" @keydown="${handleSearchKey}" />
+                    <input autocomplete="off" id="search-field" placeholder="搜索地点" value="${() => searchFieldState.value}" @input="${searchInput}" @keydown="${handleSearchKey}" />
                     ${() => (state.favoritesCount > 0 ? html`<button class="favorites-toggle-button" @click="${handleFavoritesClick}">❤️ Favorites</button>` : "")}
                     ${() => (state.canToggleProvider ? html`
                       <div class="search-provider-toggle">
-                        <button class="${() => (state.searchProvider === "amap" ? "active" : "")}" title="AMap / Gaode search provider" @click="${() => { state.searchProvider = "amap"; state.suggestions = "[]"; }}">AMap</button>
+                        <button class="${() => (state.searchProvider === "amap" ? "active" : "")}" title="高德 / AMap 搜索源" @click="${() => { state.searchProvider = "amap"; state.suggestions = "[]"; }}">AMap</button>
                         <button class="${() => (state.searchProvider === "mapbox" ? "active" : "")}" @click="${() => { state.searchProvider = "mapbox"; state.suggestions = "[]"; }}">Mapbox</button>
                       </div>
                     ` : "")}
@@ -853,14 +853,14 @@ export function NavDestination() {
     }}
     </div>
     ${() => (state.showRemoveFavoriteModal ? Modal({
-      title: "Remove Favorite",
+      title: "删除收藏",
       message: `Are you sure you want to remove <strong>${state.favoriteToRemove?.name}</strong> from your favorites?`,
       onConfirm: removeFavorite,
       onCancel: () => { state.showRemoveFavoriteModal = false; state.favoriteToRemove = null; },
-      confirmText: "Remove"
+      confirmText: "删除"
     }) : "")}
     ${() => (state.showRenameFavoriteModal ? Modal({
-      title: "Rename Favorite",
+      title: "重命名收藏",
       message: html`
         <div>
           <p>Rename <strong>${state.favoriteToRename.name}</strong> to:</p>
@@ -871,7 +871,7 @@ export function NavDestination() {
       `,
       onConfirm: renameFavorite,
       onCancel: () => { state.showRenameFavoriteModal = false; },
-      confirmText: "Rename",
+      confirmText: "重命名",
       confirmClass: "btn-primary"
     }) : "")}
   `;
@@ -896,10 +896,10 @@ function SearchSuggestions({ suggestions, selectSuggestion, removeFavorite, rena
       })()}
       ${isFavorite(s) ? html`
         <div class="favorite-actions">
-          <button class="home-favorite-button ${s.is_home ? "active" : ""}" title="Set as Home" @click="${e => { e.stopPropagation(); setHome(s); }}">🏠</button>
-          <button class="work-favorite-button ${s.is_work ? "active" : ""}" title="Set as Work" @click="${e => { e.stopPropagation(); setWork(s); }}">💼</button>
-          <button class="edit-favorite-button" title="Rename Favorite" @click="${e => { e.stopPropagation(); renameFavorite(s); }}">✏️</button>
-          <button class="remove-favorite-button" title="Remove from Favorites" @click="${e => { e.stopPropagation(); removeFavorite(s); }}">🗑️</button>
+          <button class="home-favorite-button ${s.is_home ? "active" : ""}" title="设为家" @click="${e => { e.stopPropagation(); setHome(s); }}">🏠</button>
+          <button class="work-favorite-button ${s.is_work ? "active" : ""}" title="设为公司" @click="${e => { e.stopPropagation(); setWork(s); }}">💼</button>
+          <button class="edit-favorite-button" title="重命名收藏" @click="${e => { e.stopPropagation(); renameFavorite(s); }}">✏️</button>
+          <button class="remove-favorite-button" title="取消收藏" @click="${e => { e.stopPropagation(); removeFavorite(s); }}">🗑️</button>
         </div>
       ` : ""}
     </div>

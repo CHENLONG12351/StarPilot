@@ -567,14 +567,14 @@ static safety_config gm_init(uint16_t param) {
     .max_brake = 400,
   };
 
-  static const CanMsg GM_ASCM_TX_MSGS[] = {{0x180, 0, 4, .check_relay = true}, {0x409, 0, 7, .check_relay = false}, {0x40A, 0, 7, .check_relay = false}, {0x2CB, 0, 8, .check_relay = true}, {0x370, 0, 6, .check_relay = false},  // pt bus
+  static const CanMsg GM_ASCM_TX_MSGS[] = {{0x180, 0, 4, .check_relay = false}, {0x409, 0, 7, .check_relay = false}, {0x40A, 0, 7, .check_relay = false}, {0x2CB, 0, 8, .check_relay = false}, {0x370, 0, 6, .check_relay = false},  // pt bus
                                            {0xA1, 1, 7, .check_relay = false}, {0x306, 1, 8, .check_relay = false}, {0x308, 1, 7, .check_relay = false}, {0x310, 1, 2, .check_relay = false},   // obs bus
                                            {0x315, 2, 5, .check_relay = false},  // ch bus
                                            {0x200, 0, 6, .check_relay = false},
                                            {0x1E1, 0, 7, .check_relay = false},
                                            {0xBD, 0, 7, .check_relay = false},
                                            {0x1F5, 0, 8, .check_relay = false}}; // pt bus
-  static const CanMsg GM_ASCM_ALT_BRAKE_TX_MSGS[] = {{0x180, 0, 4, .check_relay = true}, {0x409, 0, 7, .check_relay = false}, {0x40A, 0, 7, .check_relay = false}, {0x2CB, 0, 8, .check_relay = true}, {0x370, 0, 6, .check_relay = false}, {0x315, 0, 5, .check_relay = true},  // pt bus
+  static const CanMsg GM_ASCM_ALT_BRAKE_TX_MSGS[] = {{0x180, 0, 4, .check_relay = false}, {0x409, 0, 7, .check_relay = false}, {0x40A, 0, 7, .check_relay = false}, {0x2CB, 0, 8, .check_relay = false}, {0x370, 0, 6, .check_relay = false}, {0x315, 0, 5, .check_relay = true},  // pt bus
                                                      {0xA1, 1, 7, .check_relay = false}, {0x306, 1, 8, .check_relay = false}, {0x308, 1, 7, .check_relay = false}, {0x310, 1, 2, .check_relay = false},   // obs bus
                                                      {0x200, 0, 6, .check_relay = false},
                                                      {0x1E1, 0, 7, .check_relay = false},

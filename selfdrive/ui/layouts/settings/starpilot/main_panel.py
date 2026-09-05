@@ -22,43 +22,43 @@ from openpilot.selfdrive.ui.layouts.settings.starpilot.aethergrid import TileGri
 class StarPilotLayout(Widget):
   CATEGORIES = [
     {
-      "title": "Sounds & Alerts",
+      "title": "声音与提醒",
       "icon": "sound",
       "panel": "SOUNDS",
     },
     {
-      "title": "Driving Model",
+      "title": "驾驶模型",
       "icon": "aicar",
       "panel": "DRIVING_MODEL",
     },
     {
-      "title": "Driving Controls",
+      "title": "驾驶控制",
       "icon": "steering",
       "children": [
         {
-          "title": "Navigation & Maps",
+          "title": "导航与地图",
           "icon": "navigate",
           "children": [
-            {"title": "Map Data", "panel": "MAPS", "icon": "navigate"},
-            {"title": "Navigation", "panel": "NAVIGATION", "icon": "road"},
+            {"title": "地图数据", "panel": "MAPS", "icon": "navigate"},
+            {"title": "导航", "panel": "NAVIGATION", "icon": "road"},
           ],
         },
-        {"title": "Gas / Brake", "panel": "LONGITUDINAL", "icon": "road"},
-        {"title": "Steering", "panel": "LATERAL", "icon": "steering"},
+        {"title": "油门 / 刹车", "panel": "LONGITUDINAL", "icon": "road"},
+        {"title": "转向", "panel": "LATERAL", "icon": "steering"},
       ],
     },
     {
-      "title": "System",
+      "title": "系统设置",
       "icon": "system",
       "panel": "SYSTEM",
     },
     {
-      "title": "Appearance",
+      "title": "外观",
       "icon": "display",
       "panel": "VISUALS",
     },
     {
-      "title": "Vehicle Settings",
+      "title": "车辆设置",
       "icon": "vehicle",
       "panel": "VEHICLE",
     },
@@ -96,15 +96,15 @@ class StarPilotLayout(Widget):
 
     self._panels = {
       StarPilotPanelType.MAIN: StarPilotPanelInfo("", None),
-      StarPilotPanelType.SOUNDS: StarPilotPanelInfo(tr_noop("Sounds"), StarPilotSoundsLayout()),
-      StarPilotPanelType.SYSTEM: StarPilotPanelInfo(tr_noop("System Settings"), StarPilotSystemLayout()),
-      StarPilotPanelType.DRIVING_MODEL: StarPilotPanelInfo(tr_noop("Driving Model"), StarPilotDrivingModelLayout()),
-      StarPilotPanelType.LONGITUDINAL: StarPilotPanelInfo(tr_noop("Gas / Brake"), StarPilotLongitudinalLayout()),
-      StarPilotPanelType.LATERAL: StarPilotPanelInfo(tr_noop("Steering"), StarPilotLateralLayout()),
-      StarPilotPanelType.MAPS: StarPilotPanelInfo(tr_noop("Map Data"), StarPilotMapsLayout()),
-      StarPilotPanelType.NAVIGATION: StarPilotPanelInfo(tr_noop("Navigation"), StarPilotNavigationLayout()),
-      StarPilotPanelType.VISUALS: StarPilotPanelInfo(tr_noop("Appearance"), StarPilotAppearanceLayout()),
-      StarPilotPanelType.VEHICLE: StarPilotPanelInfo(tr_noop("Vehicle Settings"), StarPilotVehicleSettingsLayout()),
+      StarPilotPanelType.SOUNDS: StarPilotPanelInfo(tr_noop("声音"), StarPilotSoundsLayout()),
+      StarPilotPanelType.SYSTEM: StarPilotPanelInfo(tr_noop("系统设置"), StarPilotSystemLayout()),
+      StarPilotPanelType.DRIVING_MODEL: StarPilotPanelInfo(tr_noop("驾驶模型"), StarPilotDrivingModelLayout()),
+      StarPilotPanelType.LONGITUDINAL: StarPilotPanelInfo(tr_noop("油门 / 刹车"), StarPilotLongitudinalLayout()),
+      StarPilotPanelType.LATERAL: StarPilotPanelInfo(tr_noop("转向"), StarPilotLateralLayout()),
+      StarPilotPanelType.MAPS: StarPilotPanelInfo(tr_noop("地图数据"), StarPilotMapsLayout()),
+      StarPilotPanelType.NAVIGATION: StarPilotPanelInfo(tr_noop("导航"), StarPilotNavigationLayout()),
+      StarPilotPanelType.VISUALS: StarPilotPanelInfo(tr_noop("外观"), StarPilotAppearanceLayout()),
+      StarPilotPanelType.VEHICLE: StarPilotPanelInfo(tr_noop("车辆设置"), StarPilotVehicleSettingsLayout()),
     }
 
     self._setup_sub_panels(

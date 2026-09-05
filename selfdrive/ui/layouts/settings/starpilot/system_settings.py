@@ -81,14 +81,14 @@ EXCLUDED_KEYS = {
 }
 
 REPORT_CATEGORIES = [
-  tr_noop("Acceleration feels harsh or jerky"),
-  tr_noop("An alert was unclear and I'm not sure what it meant"),
-  tr_noop("Braking is too sudden or uncomfortable"),
-  tr_noop("I'm not sure if this is normal or a bug:"),
-  tr_noop("My steering wheel buttons aren't working"),
-  tr_noop("openpilot disengages when I don't expect it"),
-  tr_noop("openpilot feels sluggish or slow to respond"),
-  tr_noop("Something else (please describe)"),
+  tr_noop("加速感觉突兀或顿挫"),
+  tr_noop("有提醒不清楚，我不确定其含义"),
+  tr_noop("刹车太突然或不舒适"),
+  tr_noop("我不确定这是正常还是 bug："),
+  tr_noop("我的方向盘按钮失灵"),
+  tr_noop("openpilot 在我意料之外退出"),
+  tr_noop("openpilot 感觉迟钝或响应慢"),
+  tr_noop("其他（请描述）"),
 ]
 
 
@@ -128,14 +128,14 @@ class SystemSettingsManagerView(PanelManagerView):
     self._power_slider_keys = ["DeviceShutdown", "LowVoltageShutdown"]
 
     shutdown_labels = {
-      hours: f"{hours} " + (tr("hour") if hours == 1 else tr("hours"))
+      hours: f"{hours} " + (tr("小时") if hours == 1 else tr("小时"))
       for hours in range(1, 31)
     }
-    brightness_labels = {101: tr("Auto"), 0: tr("Off")}
+    brightness_labels = {101: tr("自动"), 0: tr("关闭")}
 
     self._slider_specs: dict[str, dict[str, Any]] = {
       "ScreenBrightness": {
-        "title": tr("Offroad Brightness"),
+        "title": tr("离车亮度"),
         "subtitle": "",
         "unit": "%",
         "labels": brightness_labels,
@@ -148,7 +148,7 @@ class SystemSettingsManagerView(PanelManagerView):
         "set": lambda v: self._controller._set_brightness("ScreenBrightness", v),
       },
       "ScreenBrightnessOnroad": {
-        "title": tr("Onroad Brightness"),
+        "title": tr("行驶亮度"),
         "subtitle": "",
         "unit": "%",
         "labels": brightness_labels,
@@ -161,7 +161,7 @@ class SystemSettingsManagerView(PanelManagerView):
         "set": lambda v: self._controller._set_brightness("ScreenBrightnessOnroad", int(v)),
       },
       "ScreenTimeout": {
-        "title": tr("Offroad Screen Timeout"),
+        "title": tr("离车屏幕超时"),
         "subtitle": "",
         "unit": "s",
         "labels": {},
@@ -174,7 +174,7 @@ class SystemSettingsManagerView(PanelManagerView):
         "set": lambda v: self._set_timeout("ScreenTimeout", v),
       },
       "ScreenTimeoutOnroad": {
-        "title": tr("Onroad Screen Timeout"),
+        "title": tr("行驶屏幕超时"),
         "subtitle": "",
         "unit": "s",
         "labels": {},
@@ -187,7 +187,7 @@ class SystemSettingsManagerView(PanelManagerView):
         "set": lambda v: self._set_timeout("ScreenTimeoutOnroad", v),
       },
       "DeviceShutdown": {
-        "title": tr("Shutdown Delay"),
+        "title": tr("关机延迟"),
         "subtitle": "",
         "unit": "",
         "labels": shutdown_labels,
@@ -200,7 +200,7 @@ class SystemSettingsManagerView(PanelManagerView):
         "set": lambda v: self._controller._params.put_int("DeviceShutdown", int(v)),
       },
       "LowVoltageShutdown": {
-        "title": tr("Low Voltage Shutdown"),
+        "title": tr("低电压关机"),
         "subtitle": "",
         "unit": "V",
         "labels": {},
@@ -242,56 +242,56 @@ class SystemSettingsManagerView(PanelManagerView):
 
     self._toggle_defs = [
       {
-        "title": tr("Standby Mode"),
+        "title": tr("待机模式"),
         "subtitle": "",
         "get_state": lambda: self._controller._params.get_bool("StandbyMode"),
         "set_state": lambda v: self._controller._params.put_bool("StandbyMode", v),
       },
       {
-        "title": tr("Use Konik Server"),
+        "title": tr("使用 Konik 服务器"),
         "subtitle": "",
         "get_state": self._controller._get_konik_state,
         "set_state": self._controller._on_konik_toggle,
       },
       {
-        "title": tr("Debug Mode"),
+        "title": tr("调试模式"),
         "subtitle": "",
         "get_state": lambda: self._controller._params.get_bool("DebugMode"),
         "set_state": lambda v: self._controller._params.put_bool("DebugMode", v),
       },
       {
-        "title": tr("Show FPS"),
+        "title": tr("显示 FPS"),
         "subtitle": "",
         "get_state": lambda: self._controller._params.get_bool("FPSCounter"),
         "set_state": lambda v: self._controller._params.put_bool("FPSCounter", v),
       },
       {
-        "title": tr("Disable Uploads"),
+        "title": tr("禁用上传"),
         "subtitle": "",
         "get_state": lambda: self._controller._params.get_bool("NoUploads"),
         "set_state": self._controller._on_no_uploads_toggle,
       },
       {
-        "title": tr("Disable Onroad Uploads"),
+        "title": tr("禁用行驶上传"),
         "subtitle": "",
         "get_state": lambda: self._controller._params.get_bool("DisableOnroadUploads"),
         "set_state": lambda v: self._controller._params.put_bool("DisableOnroadUploads", v),
         "is_enabled": lambda: not self._controller._params.get_bool("NoUploads"),
-        "disabled_label": tr("Turn off Disable Uploads first"),
+        "disabled_label": tr("请先关闭禁用上传"),
       },
       {
-        "title": tr("Disable Logging"),
+        "title": tr("禁用日志"),
         "subtitle": "",
         "get_state": lambda: self._controller._params.get_bool("NoLogging"),
         "set_state": self._controller._on_no_logging_toggle,
       },
       {
-        "title": tr("High Bitrate Recording"),
+        "title": tr("高码率录制"),
         "subtitle": "",
         "get_state": lambda: self._controller._params.get_bool("HigherBitrate"),
         "set_state": self._controller._on_higher_bitrate_toggle,
         "is_enabled": lambda: not self._controller._params.get_bool("DisableOnroadUploads") and not self._controller._params.get_bool("NoUploads"),
-        "disabled_label": tr("Uploads must stay enabled"),
+        "disabled_label": tr("上传必须保持启用"),
       },
     ]
 
@@ -310,7 +310,7 @@ class SystemSettingsManagerView(PanelManagerView):
 
     self._drive_mode_control = self._child(
       AetherSegmentedControl(
-        [tr("Auto"), tr("Onroad"), tr("Offroad")],
+        [tr("自动"), tr("行驶"), tr("离车")],
         self._get_drive_mode_index,
         self._on_drive_mode_change,
         style=PANEL_STYLE,
@@ -320,7 +320,7 @@ class SystemSettingsManagerView(PanelManagerView):
 
   def _tab_subtitle(self, tab_id: str) -> str:
     if tab_id == "basics":
-      return tr("{} controls + {} toggles").format(
+      return tr("{} 项控制 + {} 项开关").format(
         len(self._display_slider_keys) + len(self._power_slider_keys),
         len(self._toggle_defs))
     return self._controller.backup_status_text()
@@ -374,11 +374,11 @@ class SystemSettingsManagerView(PanelManagerView):
 
   def _get_drive_mode_index(self):
     state = self._controller._get_force_drive_state()
-    if state == tr("Default"):
+    if state == tr("默认"):
       return 0
-    if state == tr("Onroad"):
+    if state == tr("行驶"):
       return 1
-    if state == tr("Offroad"):
+    if state == tr("离车"):
       return 2
     return 0
 
@@ -551,13 +551,13 @@ class SystemSettingsManagerView(PanelManagerView):
       draw_list_group_shell(rl.Rectangle(x, y, column_w, adj_container_h), style=PANEL_STYLE)
 
       current_y = y + 4
-      current_y = draw_group_header(x + 24, current_y, column_w - 48, tr("Display"))
+      current_y = draw_group_header(x + 24, current_y, column_w - 48, tr("显示"))
       for index, key in enumerate(self._display_slider_keys):
         current_y = self._draw_slider_row(rl.Rectangle(x, current_y, column_w, 0), key, is_last=index == len(self._display_slider_keys) - 1)
         
       current_y += SECTION_GAP
       
-      current_y = draw_group_header(x + 24, current_y, column_w - 48, tr("Power"))
+      current_y = draw_group_header(x + 24, current_y, column_w - 48, tr("电源"))
       for index, key in enumerate(self._power_slider_keys):
         current_y = self._draw_slider_row(rl.Rectangle(x, current_y, column_w, 0), key, is_last=index == len(self._power_slider_keys) - 1)
 
@@ -567,9 +567,9 @@ class SystemSettingsManagerView(PanelManagerView):
         self._system_max_container_h, columns=tg_cols)
       return
 
-    y = self._draw_slider_section(y, x, width, tr("Display"), self._display_slider_keys)
+    y = self._draw_slider_section(y, x, width, tr("显示"), self._display_slider_keys)
     y += SECTION_GAP
-    y = self._draw_slider_section(y, x, width, tr("Power"), self._power_slider_keys)
+    y = self._draw_slider_section(y, x, width, tr("电源"), self._power_slider_keys)
     y += SECTION_GAP
     self._draw_connectivity_tiles_section(y, x, width)
 
@@ -609,14 +609,14 @@ class AetherBackupsCareDialog(Widget):
     self._pressed_btn_id: str | None = None
 
     self._buttons = [
-      {"id": "system_backups", "text": tr("System Backups"), "danger": False},
-      {"id": "toggle_snapshots", "text": tr("Toggle Snapshots"), "danger": False},
-      {"id": "report_issue", "text": tr("Report Issue"), "danger": False},
-      {"id": "flash_panda", "text": tr("Flash Panda"), "danger": False},
-      {"id": "clear_data", "text": tr("Clear Driving Data"), "danger": True},
-      {"id": "clear_logs", "text": tr("Clear Error Logs"), "danger": True},
-      {"id": "reset_toggles", "text": tr("Reset Toggles"), "danger": True},
-      {"id": "reset_stock", "text": tr("Reset To Stock"), "danger": True},
+      {"id": "system_backups", "text": tr("系统备份"), "danger": False},
+      {"id": "toggle_snapshots", "text": tr("开关快照"), "danger": False},
+      {"id": "report_issue", "text": tr("报告问题"), "danger": False},
+      {"id": "flash_panda", "text": tr("刷写 Panda"), "danger": False},
+      {"id": "clear_data", "text": tr("清除驾驶数据"), "danger": True},
+      {"id": "clear_logs", "text": tr("清除错误日志"), "danger": True},
+      {"id": "reset_toggles", "text": tr("重置开关"), "danger": True},
+      {"id": "reset_stock", "text": tr("重置为原厂"), "danger": True},
     ]
 
     self._button_rects: dict[str, rl.Rectangle] = {}
@@ -683,7 +683,7 @@ class AetherBackupsCareDialog(Widget):
     draw_rounded_stroke(d_rect, rl.Color(255, 255, 255, 16), radius_px=35)
     rl.draw_rectangle_rec(rl.Rectangle(d_rect.x, d_rect.y, d_rect.width, 3), self._color)
 
-    title_text = tr("Maintenance")
+    title_text = tr("维护")
     title_size = 64
     ts = measure_text_cached(self._font_title, title_text, title_size)
     rl.draw_text_ex(self._font_title, title_text, rl.Vector2(round(dx + (dialog_w - ts.x) / 2), round(dy + 87)), title_size, 0, rl.WHITE)
@@ -695,10 +695,10 @@ class AetherBackupsCareDialog(Widget):
     draw_list_group_shell(status_rect, style=PANEL_STYLE)
 
     gui_label(rl.Rectangle(status_rect.x + 20, status_rect.y + 10, status_rect.width - 40, 24),
-              tr("System Status"), 22, AetherListColors.MUTED, FontWeight.SEMI_BOLD)
+              tr("系统状态"), 22, AetherListColors.MUTED, FontWeight.SEMI_BOLD)
 
-    storage_text = tr("Storage: {}").format(self._controller.storage_summary())
-    backup_text = tr("Backups: {}  •  Snapshots: {}").format(
+    storage_text = tr("存储：{}").format(self._controller.storage_summary())
+    backup_text = tr("备份：{}  •  快照：{}").format(
       self._controller.backup_count_text(), self._controller.toggle_backup_count_text())
     gui_label(rl.Rectangle(status_rect.x + 20, status_rect.y + 40, status_rect.width - 40, 24),
               storage_text, 22, AetherListColors.HEADER, FontWeight.MEDIUM)
@@ -795,7 +795,7 @@ class AetherBackupsCareDialog(Widget):
     draw_rounded_fill(self._close_rect, close_fill, radius_px=28)
     draw_rounded_stroke(self._close_rect, close_border, thickness=2, radius_px=28)
 
-    close_text = tr("Close")
+    close_text = tr("关闭")
     close_size = 38
     cts = measure_text_cached(self._font_btn, close_text, close_size)
     rl.draw_text_ex(
@@ -866,14 +866,14 @@ class StarPilotSystemLayout(_SettingsPage):
 
   def backup_count_text(self) -> str:
     count = len(self._get_backups("backups"))
-    return tr("None") if count == 0 else tr("{} saved").format(count)
+    return tr("无") if count == 0 else tr("已保存 {}").format(count)
 
   def backup_count(self) -> int:
     return len(self._get_backups("backups"))
 
   def toggle_backup_count_text(self) -> str:
     count = len(self._get_backups("toggle_backups"))
-    return tr("None") if count == 0 else tr("{} saved").format(count)
+    return tr("无") if count == 0 else tr("已保存 {}").format(count)
 
   def toggle_backup_count(self) -> int:
     return len(self._get_backups("toggle_backups"))
@@ -881,27 +881,27 @@ class StarPilotSystemLayout(_SettingsPage):
   def latest_backup_summary(self) -> str:
     backups = self._get_backups("backups")
     if not backups:
-      return tr("No full-system backups saved yet.")
+      return tr("尚未保存全系统备份。")
     return backups[-1]
 
   def latest_toggle_backup_summary(self) -> str:
     backups = self._get_backups("toggle_backups")
     if not backups:
-      return tr("No toggle snapshots saved yet.")
+      return tr("尚未保存开关快照。")
     return backups[-1]
 
   def backup_status_text(self) -> str:
     system_count = len(self._get_backups("backups"))
     toggle_count = len(self._get_backups("toggle_backups"))
-    return tr("{} full | {} toggle").format(system_count, toggle_count)
+    return tr("{} 全量 | {} 开关").format(system_count, toggle_count)
 
   def open_backup_manager(self, backup_kind: str):
     if backup_kind == "system":
-      options = [tr("Create Backup"), tr("Restore Backup"), tr("Delete Backup")]
-      title = tr("System Backups")
+      options = [tr("创建备份"), tr("恢复备份"), tr("删除备份")]
+      title = tr("系统备份")
     else:
-      options = [tr("Save Toggle Snapshot"), tr("Restore Toggle Snapshot"), tr("Delete Toggle Snapshot")]
-      title = tr("Toggle Snapshots")
+      options = [tr("保存开关快照"), tr("恢复开关快照"), tr("删除开关快照")]
+      title = tr("开关快照")
 
     def on_select(res):
       if res != DialogResult.CONFIRM or not dialog.selection:
@@ -1000,16 +1000,16 @@ class StarPilotSystemLayout(_SettingsPage):
       if ui_state.started:
         gui_app.push_widget(
           ConfirmDialog(
-            tr("Reboot required. Reboot now?"), tr("Reboot"), tr("Cancel"),
+            tr("需要重启。现在重启吗？"), tr("重启"), tr("取消"),
             callback=lambda res: HARDWARE.reboot() if res == DialogResult.CONFIRM else None
           )
         )
 
     gui_app.push_widget(
       ConfirmDialog(
-        tr("Switch Connect endpoint to {}?").format(target),
-        tr("Switch"),
-        tr("Cancel"),
+        tr("将 Connect 端点切换到 {}？").format(target),
+        tr("切换"),
+        tr("取消"),
         callback=on_confirm
       )
     )
@@ -1017,8 +1017,8 @@ class StarPilotSystemLayout(_SettingsPage):
   def _on_no_uploads_toggle(self, state):
     if state:
       gui_app.push_widget(ConfirmDialog(
-        tr("This will prevent your drives from being uploaded to comma connect which may impact receiving support. Are you sure?"),
-        tr("Disable"),
+        tr("这将阻止你的驾驶上传到 comma connect，可能影响获得支持。确定吗？"),
+        tr("禁用"),
         callback=lambda res: self._params.put_bool("NoUploads", True) if res == DialogResult.CONFIRM else None,
       ))
     else:
@@ -1027,8 +1027,8 @@ class StarPilotSystemLayout(_SettingsPage):
   def _on_no_logging_toggle(self, state):
     if state:
       gui_app.push_widget(ConfirmDialog(
-        tr("This will prevent your drives from being logged. Are you sure?"),
-        tr("Disable"),
+        tr("这将阻止你的驾驶被记录。确定吗？"),
+        tr("禁用"),
         callback=lambda res: self._params.put_bool("NoLogging", True) if res == DialogResult.CONFIRM else None,
       ))
     else:
@@ -1049,7 +1049,7 @@ class StarPilotSystemLayout(_SettingsPage):
     if ui_state.started:
       gui_app.push_widget(
         ConfirmDialog(
-          tr("Reboot required. Reboot now?"), tr("Reboot"), tr("Cancel"), callback=lambda res: HARDWARE.reboot() if res == DialogResult.CONFIRM else None
+          tr("需要重启。现在重启吗？"), tr("重启"), tr("取消"), callback=lambda res: HARDWARE.reboot() if res == DialogResult.CONFIRM else None
         )
       )
 
@@ -1077,16 +1077,16 @@ class StarPilotSystemLayout(_SettingsPage):
                 if entry.is_dir():
                   shutil.rmtree(entry, ignore_errors=True)
         threading.Thread(target=_task, daemon=True).start()
-        gui_app.push_widget(alert_dialog(tr("Driving data deletion started.")))
-    gui_app.push_widget(ConfirmDialog(tr("Delete all driving data and footage?"), tr("Delete"), callback=_do_delete))
+        gui_app.push_widget(alert_dialog(tr("驾驶数据删除已开始。")))
+    gui_app.push_widget(ConfirmDialog(tr("删除所有驾驶数据和录像？"), tr("删除"), callback=_do_delete))
 
   def _on_delete_error_logs(self):
     def _do_delete(res):
       if res == DialogResult.CONFIRM:
         shutil.rmtree("/data/error_logs", ignore_errors=True)
         os.makedirs("/data/error_logs", exist_ok=True)
-        gui_app.push_widget(alert_dialog(tr("Error logs deleted.")))
-    gui_app.push_widget(ConfirmDialog(tr("Delete all error logs?"), tr("Delete"), callback=_do_delete))
+        gui_app.push_widget(alert_dialog(tr("错误日志已删除。")))
+    gui_app.push_widget(ConfirmDialog(tr("删除所有错误日志？"), tr("删除"), callback=_do_delete))
 
   def _get_backups(self, folder: str = "backups") -> list[str]:
     b_dir = Path(f"/data/{folder}")
@@ -1112,15 +1112,15 @@ class StarPilotSystemLayout(_SettingsPage):
         safe_name = self._sanitize_backup_name(name or "", "backup")
         backup_path = f"/data/backups/{safe_name}.tar.zst"
         if Path(backup_path).exists():
-          gui_app.push_widget(alert_dialog(tr("A backup with this name already exists.")))
+          gui_app.push_widget(alert_dialog(tr("同名备份已存在。")))
           return
-        gui_app.push_widget(alert_dialog(tr("Backup creation started.")))
+        gui_app.push_widget(alert_dialog(tr("备份创建已开始。")))
         def _task():
           os.makedirs("/data/backups", exist_ok=True)
           subprocess.run(["tar", "--use-compress-program=zstd", "-cf", backup_path, "/data/openpilot"])
         threading.Thread(target=_task, daemon=True).start()
     self._keyboard.reset(min_text_size=0)
-    self._keyboard.set_title(tr("Name your backup"), "")
+    self._keyboard.set_title(tr("命名你的备份"), "")
     self._keyboard.set_text("")
     self._keyboard.set_callback(lambda result: on_name(result, self._keyboard.text))
     gui_app.push_widget(self._keyboard)
@@ -1128,12 +1128,12 @@ class StarPilotSystemLayout(_SettingsPage):
   def _on_restore_backup(self):
     backups = self._get_backups("backups")
     if not backups:
-      gui_app.push_widget(alert_dialog(tr("No backups found.")))
+      gui_app.push_widget(alert_dialog(tr("未找到备份。")))
       return
 
     def _on_select(res):
       if res == DialogResult.CONFIRM and dialog.selection:
-        gui_app.push_widget(alert_dialog(tr("Restoring... device will reboot.")))
+        gui_app.push_widget(alert_dialog(tr("恢复中… 设备将重启。")))
         def _task():
           shutil.rmtree("/data/openpilot", ignore_errors=True)
           os.makedirs("/data/openpilot", exist_ok=True)
@@ -1141,13 +1141,13 @@ class StarPilotSystemLayout(_SettingsPage):
           os.system("reboot")
         threading.Thread(target=_task, daemon=True).start()
 
-    dialog = MultiOptionDialog(tr("Select Backup"), backups, callback=_on_select)
+    dialog = MultiOptionDialog(tr("选择备份"), backups, callback=_on_select)
     gui_app.push_widget(dialog)
 
   def _on_delete_backup(self):
     backups = self._get_backups("backups")
     if not backups:
-      gui_app.push_widget(alert_dialog(tr("No backups found.")))
+      gui_app.push_widget(alert_dialog(tr("未找到备份。")))
       return
 
     def _on_select(res):
@@ -1157,11 +1157,11 @@ class StarPilotSystemLayout(_SettingsPage):
         def _on_confirm(confirm_res):
           if confirm_res == DialogResult.CONFIRM:
             os.remove(f"/data/backups/{backup_name}")
-            gui_app.push_widget(alert_dialog(tr("Backup deleted.")))
+            gui_app.push_widget(alert_dialog(tr("备份已删除。")))
 
-        gui_app.push_widget(ConfirmDialog(tr("Delete backup '{}'?").format(backup_name), tr("Delete"), callback=_on_confirm))
+        gui_app.push_widget(ConfirmDialog(tr("删除备份 '{}'？").format(backup_name), tr("删除"), callback=_on_confirm))
 
-    dialog = MultiOptionDialog(tr("Delete Backup"), backups, callback=_on_select)
+    dialog = MultiOptionDialog(tr("删除备份"), backups, callback=_on_select)
     gui_app.push_widget(dialog)
 
   def _on_create_toggle_backup(self):
@@ -1170,13 +1170,13 @@ class StarPilotSystemLayout(_SettingsPage):
         safe_name = self._sanitize_backup_name(name or "", "toggle_backup")
         backup_path = Path(f"/data/toggle_backups/{safe_name}")
         if backup_path.exists():
-          gui_app.push_widget(alert_dialog(tr("A toggle backup with this name already exists.")))
+          gui_app.push_widget(alert_dialog(tr("同名开关备份已存在。")))
           return
         os.makedirs(backup_path, exist_ok=True)
         shutil.copytree("/data/params/d", str(backup_path), dirs_exist_ok=True)
-        gui_app.push_widget(alert_dialog(tr("Toggle backup created.")))
+        gui_app.push_widget(alert_dialog(tr("开关备份已创建。")))
     self._keyboard.reset(min_text_size=0)
-    self._keyboard.set_title(tr("Name your toggle backup"), "")
+    self._keyboard.set_title(tr("命名你的开关备份"), "")
     self._keyboard.set_text("")
     self._keyboard.set_callback(lambda result: on_name(result, self._keyboard.text))
     gui_app.push_widget(self._keyboard)
@@ -1184,7 +1184,7 @@ class StarPilotSystemLayout(_SettingsPage):
   def _on_restore_toggle_backup(self):
     backups = self._get_backups("toggle_backups")
     if not backups:
-      gui_app.push_widget(alert_dialog(tr("No toggle backups found.")))
+      gui_app.push_widget(alert_dialog(tr("未找到开关备份。")))
       return
 
     def _on_select(res):
@@ -1202,16 +1202,16 @@ class StarPilotSystemLayout(_SettingsPage):
               new_path = params_dir / new_key
               if old_path.exists():
                 old_path.replace(new_path)
-            gui_app.push_widget(alert_dialog(tr("Toggles restored.")))
-        gui_app.push_widget(ConfirmDialog(tr("This will overwrite your current toggles."), tr("Restore"), callback=on_confirm))
+            gui_app.push_widget(alert_dialog(tr("开关已恢复。")))
+        gui_app.push_widget(ConfirmDialog(tr("这将覆盖你当前的开关设置。"), tr("恢复"), callback=on_confirm))
 
-    dialog = MultiOptionDialog(tr("Select Toggle Backup"), backups, callback=_on_select)
+    dialog = MultiOptionDialog(tr("选择开关备份"), backups, callback=_on_select)
     gui_app.push_widget(dialog)
 
   def _on_delete_toggle_backup(self):
     backups = self._get_backups("toggle_backups")
     if not backups:
-      gui_app.push_widget(alert_dialog(tr("No toggle backups found.")))
+      gui_app.push_widget(alert_dialog(tr("未找到开关备份。")))
       return
 
     def _on_select(res):
@@ -1221,26 +1221,26 @@ class StarPilotSystemLayout(_SettingsPage):
         def _on_confirm(confirm_res):
           if confirm_res == DialogResult.CONFIRM:
             shutil.rmtree(f"/data/toggle_backups/{backup_name}", ignore_errors=True)
-            gui_app.push_widget(alert_dialog(tr("Toggle backup deleted.")))
+            gui_app.push_widget(alert_dialog(tr("开关备份已删除。")))
 
-        gui_app.push_widget(ConfirmDialog(tr("Delete toggle backup '{}'?").format(backup_name), tr("Delete"), callback=_on_confirm))
+        gui_app.push_widget(ConfirmDialog(tr("删除开关备份 '{}'？").format(backup_name), tr("删除"), callback=_on_confirm))
 
-    dialog = MultiOptionDialog(tr("Delete Toggle Backup"), backups, callback=_on_select)
+    dialog = MultiOptionDialog(tr("删除开关备份"), backups, callback=_on_select)
     gui_app.push_widget(dialog)
 
   def _get_force_drive_state(self):
     if self._params.get_bool("ForceOnroad"):
-      return tr("Onroad")
+      return tr("行驶")
     if self._params.get_bool("ForceOffroad"):
-      return tr("Offroad")
-    return tr("Default")
+      return tr("离车")
+    return tr("默认")
 
   def _on_flash_panda(self):
     def _do_flash(res):
       if res == DialogResult.CONFIRM:
         self._params_memory.put_bool("FlashPanda", True)
-        gui_app.push_widget(alert_dialog(tr("Panda flashing started. Device will reboot when finished.")))
-    gui_app.push_widget(ConfirmDialog(tr("Flash Panda firmware?"), tr("Flash"), callback=_do_flash))
+        gui_app.push_widget(alert_dialog(tr("Panda 刷写已开始，完成后设备将重启。")))
+    gui_app.push_widget(ConfirmDialog(tr("刷写 Panda 固件？"), tr("刷写"), callback=_do_flash))
 
   def _on_report_issue(self):
     def on_category(res):
@@ -1252,13 +1252,13 @@ class StarPilotSystemLayout(_SettingsPage):
           self._params.put("DiscordUsername", username)
           report = {"DiscordUser": username, "Issue": dialog.selection}
           self._params_memory.put("IssueReported", report)
-          gui_app.push_widget(alert_dialog(tr("Issue reported. Thank you!")))
+          gui_app.push_widget(alert_dialog(tr("问题已报告。谢谢！")))
       self._keyboard.reset(min_text_size=1)
-      self._keyboard.set_title(tr("Discord Username"), "")
+      self._keyboard.set_title(tr("Discord 用户名"), "")
       self._keyboard.set_text(discord_user or "")
       self._keyboard.set_callback(lambda result: on_discord(result, self._keyboard.text))
       gui_app.push_widget(self._keyboard)
-    dialog = MultiOptionDialog(tr("Select Issue"), REPORT_CATEGORIES, callback=on_category)
+    dialog = MultiOptionDialog(tr("选择问题"), REPORT_CATEGORIES, callback=on_category)
     gui_app.push_widget(dialog)
 
   def _on_reset_defaults(self):
@@ -1271,8 +1271,8 @@ class StarPilotSystemLayout(_SettingsPage):
           default = self._params.get_default_value(k)
           if default is not None:
             self._params.put(k, default)
-        gui_app.push_widget(alert_dialog(tr("Toggles reset to defaults.")))
-    gui_app.push_widget(ConfirmDialog(tr("Reset all toggles to defaults?"), tr("Reset"), callback=_do_reset))
+        gui_app.push_widget(alert_dialog(tr("开关已重置为默认值。")))
+    gui_app.push_widget(ConfirmDialog(tr("将所有开关重置为默认值？"), tr("重置"), callback=_do_reset))
 
   def _on_reset_stock(self):
     def _do_reset(res):
@@ -1284,5 +1284,5 @@ class StarPilotSystemLayout(_SettingsPage):
           stock = self._params.get_stock_value(k)
           if stock is not None:
             self._params.put(k, stock)
-        gui_app.push_widget(alert_dialog(tr("Toggles reset to stock openpilot.")))
-    gui_app.push_widget(ConfirmDialog(tr("Reset all toggles to stock openpilot?"), tr("Reset"), callback=_do_reset))
+        gui_app.push_widget(alert_dialog(tr("开关已重置为原厂 openpilot。")))
+    gui_app.push_widget(ConfirmDialog(tr("将所有开关重置为原厂 openpilot？"), tr("重置"), callback=_do_reset))

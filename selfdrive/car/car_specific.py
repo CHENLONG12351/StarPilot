@@ -165,7 +165,11 @@ class CarSpecificEvents:
         self.CP.networkLocation == NetworkLocation.fwdCamera and
         (self.CP.carFingerprint in GM_STANDSTILL_BRAKE_CAMERA_CARS or self.CP.carFingerprint not in SDGM_CAR)
       )
-      below_min_enable_speed = CS.vEgo < self.CP.minEnableSpeed or getattr(CS, "moving_backward", False)
+      # stock ACC behavior: SET+ (resume) re-engages at low speed once a set speed is stored
+      _bt = structs.CarState.ButtonEvent.Type
+      _resume_pressed = any(be.type in (_bt.accelCruise, _bt.resumeCruise) for be in CS.buttonEvents)
+      _low_speed_resume = _resume_pressed and CS.vCruise <= 250 and not getattr(CS, "moving_backward", False)
+      below_min_enable_speed = (CS.vEgo < self.CP.minEnableSpeed or getattr(CS, "moving_backward", False)) and not _low_speed_resume
       if below_min_enable_speed and not standstill_brake_enable_allowed:
         events.add(EventName.belowEngageSpeed)
       if CS.cruiseState.standstill and not self.CP.autoResumeSng:

@@ -91,19 +91,19 @@ SLC_OVERRIDE_OPTIONS = [
 class AdaptiveSpeedView(CardHubManagerView):
   def __init__(self, controller):
     super().__init__(controller, [], columns=2,
-                     header_title=tr_noop("Adaptive Speed Controls"))
+                     header_title=tr_noop("自适应速度控制"))
 
   def _build_cards(self):
     return [
       {
-        "title": tr("Conditional Drive Mode"),
-        "desc": tr("Configure automated switching between Experimental and Chill Modes based on set conditions."),
+        "title": tr("条件驾驶模式"),
+        "desc": tr("根据设定条件，在实验模式与 Chill 模式之间自动切换。"),
         "icon": "steering",
         "on_click": lambda: self._controller._navigate_to("ce"),
       },
       {
-        "title": tr("Curve Speed Controller"),
-        "desc": tr("Configure speed control on curves and reset collected calibration data."),
+        "title": tr("弯道速度控制器"),
+        "desc": tr("配置弯道速度控制并重置已收集的校准数据。"),
         "icon": "navigate",
         "on_click": lambda: self._controller._navigate_to("csc"),
       },
@@ -121,44 +121,44 @@ class LongitudinalManagerView(CardHubManagerView):
   def _build_cards(self):
     return [
       {
-        "title": tr("Longitudinal Tuning"),
-        "desc": tr("Configure acceleration profiles, lane changes, and route speed control."),
+        "title": tr("纵向调校"),
+        "desc": tr("配置加速曲线、车道变更和路线速度控制。"),
         "icon": "steering",
         "on_click": lambda: self._controller._navigate_to("tune"),
       },
       {
-        "title": tr("Advanced Actuators"),
-        "desc": tr("Adjust actuator delay, EV/Truck tuning, and launch/stop speeds/rates."),
+        "title": tr("高级执行器"),
+        "desc": tr("调整执行器延迟、电动/卡车调校、起步/停止速度与速率。"),
         "icon": "vehicle",
         "on_click": lambda: self._controller._navigate_to("advanced"),
       },
       {
-        "title": tr("Speed Limit Controller"),
-        "desc": tr("Manage auto speed matching, confirmation, offsets, and source priority."),
+        "title": tr("限速控制器"),
+        "desc": tr("管理自动速度匹配、确认、偏移和来源优先级。"),
         "icon": "navigate",
         "on_click": lambda: self._controller._navigate_to("slc"),
       },
       {
-        "title": tr("Vision Speed Limits"),
-        "desc": tr("Detect and display speed-limit signs without enabling Speed Limit Controller."),
+        "title": tr("视觉限速"),
+        "desc": tr("检测并显示限速标志，无需开启限速控制器。"),
         "icon": "road",
         "on_click": lambda: self._controller._navigate_to("vision_speed_limits"),
       },
       {
-        "title": tr("Adaptive Speed Controls"),
-        "desc": tr("Configure Curve Speed Controller and Conditional Experimental Mode triggers."),
+        "title": tr("自适应速度控制"),
+        "desc": tr("配置弯道速度控制器和条件实验模式触发。"),
         "icon": "display",
         "on_click": lambda: self._controller._navigate_to("adaptive_speed"),
       },
       {
-        "title": tr("Driving Personalities"),
-        "desc": tr("Customize follow distance and jerk/response metrics for each personality profile."),
+        "title": tr("驾驶风格"),
+        "desc": tr("为每种驾驶风格自定义跟车距离和急动度/响应指标。"),
         "icon": "system",
         "on_click": lambda: self._controller._navigate_to("personality"),
       },
       {
-        "title": tr("Quality of Life"),
-        "desc": tr("Configure cruise intervals, standstill behaviors, gear mapping, and weather presets."),
+        "title": tr("舒适便利"),
+        "desc": tr("配置巡航间隔、停车行为、档位映射和天气预设。"),
         "icon": "sound",
         "on_click": lambda: self._controller._navigate_to("daily"),
       },
@@ -172,7 +172,7 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
 
   def __init__(self, controller: StarPilotLongitudinalLayout):
     super().__init__()
-    self._header_title = tr("Conditional Drive Mode")
+    self._header_title = tr("条件驾驶模式")
     self._controller = controller
 
     self._init_segmented_control()
@@ -182,7 +182,7 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
   def _init_segmented_control(self):
     self._drive_mode_control = self._child(
       AetherSegmentedControl(
-        [tr("OFF"), tr("Experimental"), tr("Chill")],
+        [tr("关闭"), tr("实验"), tr("Chill")],
         self._get_drive_mode_index,
         self._on_drive_mode_change,
         style=PANEL_STYLE,
@@ -218,22 +218,22 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
     self.register_page_grid(self._toggle_grid)
 
     cem_defs = [
-      {"title": tr("Curves"), "subtitle": tr("Switch to Experimental Mode on open-road curves."), "get_state": lambda: self._controller._params.get_bool("CECurves"), "set_state": lambda v: self._controller._params.put_bool("CECurves", v)},
-      {"title": tr("Curves w/ Lead"), "subtitle": tr("Switch on curves even when following a lead."), "get_state": lambda: self._controller._params.get_bool("CECurvesLead"), "set_state": lambda v: self._controller._params.put_bool("CECurvesLead", v), "is_enabled": lambda: self._controller._params.get_bool("CECurves"), "disabled_label": tr("Turn on Curves first")},
-      {"title": tr("Stop Lights/Signs"), "subtitle": tr("Switch when openpilot detects a stop."), "get_state": lambda: self._controller._params.get_bool("CEStopLights"), "set_state": lambda v: self._controller._params.put_bool("CEStopLights", v)},
-      {"title": tr("Lead Ahead"), "subtitle": tr("Switch when a slower/stopped vehicle is ahead."), "get_state": lambda: self._controller._params.get_bool("CELead"), "set_state": lambda v: self._controller._params.put_bool("CELead", v)},
-      {"title": tr("Slower Lead"), "subtitle": tr("Switch specifically for slower leads."), "get_state": lambda: self._controller._params.get_bool("CESlowerLead"), "set_state": lambda v: self._controller._params.put_bool("CESlowerLead", v), "is_enabled": lambda: self._controller._params.get_bool("CELead"), "disabled_label": tr("Turn on Lead first")},
-      {"title": tr("Stopped Lead"), "subtitle": tr("Switch specifically for stopped leads."), "get_state": lambda: self._controller._params.get_bool("CEStoppedLead"), "set_state": lambda v: self._controller._params.put_bool("CEStoppedLead", v), "is_enabled": lambda: self._controller._params.get_bool("CELead"), "disabled_label": tr("Turn on Lead first")},
-      {"title": tr("Signal Lane Detect"), "subtitle": tr("Don't trigger on turn signal if lines are clear."), "get_state": lambda: self._controller._params.get_bool("CESignalLaneDetection"), "set_state": lambda v: self._controller._params.put_bool("CESignalLaneDetection", v), "is_enabled": lambda: self._controller._params.get_int("CESignalSpeed") > 0, "disabled_label": tr("Needs Turn Signal speed > 0")},
-      {"title": tr("Status Widget"), "subtitle": tr("Show condition trigger on the drive screen."), "get_state": lambda: self._controller._params.get_bool("ShowCEMStatus"), "set_state": lambda v: self._controller._params.put_bool("ShowCEMStatus", v)},
-      {"title": tr("Persist Exp State"), "subtitle": tr("Keep manual Experimental override through reboots."), "get_state": lambda: self._controller._params.get_bool("PersistExperimentalState"), "set_state": self._controller._set_persist_experimental_state},
+      {"title": tr("弯道"), "subtitle": tr("在开放道路弯道切换到实验模式。"), "get_state": lambda: self._controller._params.get_bool("CECurves"), "set_state": lambda v: self._controller._params.put_bool("CECurves", v)},
+      {"title": tr("有前车弯道"), "subtitle": tr("即使有前车也在弯道切换。"), "get_state": lambda: self._controller._params.get_bool("CECurvesLead"), "set_state": lambda v: self._controller._params.put_bool("CECurvesLead", v), "is_enabled": lambda: self._controller._params.get_bool("CECurves"), "disabled_label": tr("请先开启弯道")},
+      {"title": tr("红绿灯/停车标志"), "subtitle": tr("openpilot 检测到停车时切换。"), "get_state": lambda: self._controller._params.get_bool("CEStopLights"), "set_state": lambda v: self._controller._params.put_bool("CEStopLights", v)},
+      {"title": tr("前方有车"), "subtitle": tr("前方有较慢/停止车辆时切换。"), "get_state": lambda: self._controller._params.get_bool("CELead"), "set_state": lambda v: self._controller._params.put_bool("CELead", v)},
+      {"title": tr("较慢前车"), "subtitle": tr("专门针对较慢前车切换。"), "get_state": lambda: self._controller._params.get_bool("CESlowerLead"), "set_state": lambda v: self._controller._params.put_bool("CESlowerLead", v), "is_enabled": lambda: self._controller._params.get_bool("CELead"), "disabled_label": tr("请先开启前方有车")},
+      {"title": tr("停止的前车"), "subtitle": tr("专门针对已停止的前车切换。"), "get_state": lambda: self._controller._params.get_bool("CEStoppedLead"), "set_state": lambda v: self._controller._params.put_bool("CEStoppedLead", v), "is_enabled": lambda: self._controller._params.get_bool("CELead"), "disabled_label": tr("请先开启前方有车")},
+      {"title": tr("转向灯车道检测"), "subtitle": tr("车道线清晰时不因转向灯触发。"), "get_state": lambda: self._controller._params.get_bool("CESignalLaneDetection"), "set_state": lambda v: self._controller._params.put_bool("CESignalLaneDetection", v), "is_enabled": lambda: self._controller._params.get_int("CESignalSpeed") > 0, "disabled_label": tr("需要转向灯速度 > 0")},
+      {"title": tr("状态组件"), "subtitle": tr("在驾驶界面显示条件触发。"), "get_state": lambda: self._controller._params.get_bool("ShowCEMStatus"), "set_state": lambda v: self._controller._params.put_bool("ShowCEMStatus", v)},
+      {"title": tr("保持实验状态"), "subtitle": tr("重启后保持手动实验模式覆盖。"), "get_state": lambda: self._controller._params.get_bool("PersistExperimentalState"), "set_state": self._controller._set_persist_experimental_state},
     ]
 
     ccm_defs = [
-      {"title": tr("Stable Lead Ahead"), "subtitle": tr("Switch to Chill Mode when following a steady lead."), "get_state": lambda: self._controller._params.get_bool("CCMLead"), "set_state": lambda v: self._controller._params.put_bool("CCMLead", v)},
-      {"title": tr("Launch Assist"), "subtitle": tr("Temporarily switch to Chill from a stop."), "get_state": lambda: self._controller._params.get_bool("CCMLaunchAssist"), "set_state": lambda v: self._controller._params.put_bool("CCMLaunchAssist", v)},
-      {"title": tr("Status Widget"), "subtitle": tr("Show condition trigger on the drive screen."), "get_state": lambda: self._controller._params.get_bool("ShowCCMStatus"), "set_state": lambda v: self._controller._params.put_bool("ShowCCMStatus", v)},
-      {"title": tr("Persist Chill State"), "subtitle": tr("Keep manual Chill override through reboots."), "get_state": lambda: self._controller._params.get_bool("PersistChillState"), "set_state": self._controller._set_persist_chill_state},
+      {"title": tr("稳定前车"), "subtitle": tr("跟随稳定前车时切换到 Chill 模式。"), "get_state": lambda: self._controller._params.get_bool("CCMLead"), "set_state": lambda v: self._controller._params.put_bool("CCMLead", v)},
+      {"title": tr("起步辅助"), "subtitle": tr("停车起步时临时切换到 Chill。"), "get_state": lambda: self._controller._params.get_bool("CCMLaunchAssist"), "set_state": lambda v: self._controller._params.put_bool("CCMLaunchAssist", v)},
+      {"title": tr("状态组件"), "subtitle": tr("在驾驶界面显示条件触发。"), "get_state": lambda: self._controller._params.get_bool("ShowCCMStatus"), "set_state": lambda v: self._controller._params.put_bool("ShowCCMStatus", v)},
+      {"title": tr("保持 Chill 状态"), "subtitle": tr("重启后保持手动 Chill 覆盖。"), "get_state": lambda: self._controller._params.get_bool("PersistChillState"), "set_state": self._controller._set_persist_chill_state},
     ]
 
     self._cem_toggle_defs = cem_defs
@@ -275,13 +275,13 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
     max_speed = 150.0 if is_metric else 100.0
 
     specs = {
-      "CESpeed": {"title": tr("Below Speed"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 20, 35, 55, 75], "labels": {}, "get": lambda: float(self._controller._params.get_int("CESpeed"))},
-      "CESpeedLead": {"title": tr("Speed w/ Lead"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 20, 35, 55, 75], "labels": {}, "get": lambda: float(self._controller._params.get_int("CESpeedLead"))},
-      "CESignalSpeed": {"title": tr("Turn Signal Below"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 20, 35, 55, 75], "labels": {0.0: tr("Off")}, "get": lambda: float(self._controller._params.get_int("CESignalSpeed"))},
-      "CEModelStopTime": {"title": tr("Predicted Stop In"), "subtitle": "", "min": 0, "max": 10.0, "step": 0.1, "unit": "s", "presets": [0, 3, 5, 7.7, 10], "labels": {0.0: tr("Off")}, "get": lambda: float(self._controller._params.get_float("CEModelStopTime"))},
-      "CCMSpeed": {"title": tr("Above Speed"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 35, 55, 65, 80], "labels": {}, "get": lambda: float(self._controller._params.get_int("CCMSpeed"))},
-      "CCMSpeedLead": {"title": tr("Speed w/ Lead"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 35, 55, 65, 80], "labels": {}, "get": lambda: float(self._controller._params.get_int("CCMSpeedLead"))},
-      "CCMSetSpeedMargin": {"title": tr("Set Speed Margin"), "subtitle": "", "min": 0, "max": 30.0 if is_metric else 15.0, "step": 1.0, "unit": speed_unit, "presets": [0, 5, 10, 15], "labels": {}, "get": lambda: float(self._controller._params.get_int("CCMSetSpeedMargin"))},
+      "CESpeed": {"title": tr("低于速度"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 20, 35, 55, 75], "labels": {}, "get": lambda: float(self._controller._params.get_int("CESpeed"))},
+      "CESpeedLead": {"title": tr("有前车速度"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 20, 35, 55, 75], "labels": {}, "get": lambda: float(self._controller._params.get_int("CESpeedLead"))},
+      "CESignalSpeed": {"title": tr("转向灯低于"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 20, 35, 55, 75], "labels": {0.0: tr("关闭")}, "get": lambda: float(self._controller._params.get_int("CESignalSpeed"))},
+      "CEModelStopTime": {"title": tr("预计停车时间"), "subtitle": "", "min": 0, "max": 10.0, "step": 0.1, "unit": "s", "presets": [0, 3, 5, 7.7, 10], "labels": {0.0: tr("关闭")}, "get": lambda: float(self._controller._params.get_float("CEModelStopTime"))},
+      "CCMSpeed": {"title": tr("高于速度"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 35, 55, 65, 80], "labels": {}, "get": lambda: float(self._controller._params.get_int("CCMSpeed"))},
+      "CCMSpeedLead": {"title": tr("有前车速度"), "subtitle": "", "min": 0, "max": max_speed, "step": 1.0, "unit": speed_unit, "presets": [0, 35, 55, 65, 80], "labels": {}, "get": lambda: float(self._controller._params.get_int("CCMSpeedLead"))},
+      "CCMSetSpeedMargin": {"title": tr("设定速度余量"), "subtitle": "", "min": 0, "max": 30.0 if is_metric else 15.0, "step": 1.0, "unit": speed_unit, "presets": [0, 5, 10, 15], "labels": {}, "get": lambda: float(self._controller._params.get_int("CCMSetSpeedMargin"))},
     }
 
     self._cem_keys = ["CESpeed", "CESpeedLead", "CESignalSpeed", "CEModelStopTime"]
@@ -309,14 +309,14 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
     max_speed = 150.0 if is_metric else 100.0
 
     specs = {
-      "CESpeed": {"title": tr("Below Speed"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 20, 35, 55, 75]},
-      "CESpeedLead": {"title": tr("Speed w/ Lead"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 20, 35, 55, 75]},
-      "CESignalSpeed": {"title": tr("Turn Signal Below"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {0.0: tr("Off")}, "presets": [0, 20, 35, 55, 75]},
-      "CEModelStopTime": {"title": tr("Predicted Stop In"), "min": 0, "max": 10.0, "unit": "s", "labels": {0.0: tr("Off")}, "presets": [0, 3, 5, 7.7, 10]},
-      "CCMSpeed": {"title": tr("Above Speed"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 35, 55, 65, 80]},
-      "CCMSpeedLead": {"title": tr("Speed w/ Lead"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 35, 55, 65, 80]},
-      "CCMSetSpeedMargin": {"title": tr("Set Speed Margin"), "min": 0, "max": 30.0 if is_metric else 15.0, "unit": speed_unit, "labels": {}, "presets": [0, 5, 10, 15]},
-      "PulseGlideSpeedDelta": {"title": tr("Pulse and Glide Delta"), "min": 0.5, "max": 30.0 if is_metric else 15.0, "unit": speed_unit, "labels": {}, "presets": [1, 3, 5, 10]},
+      "CESpeed": {"title": tr("低于速度"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 20, 35, 55, 75]},
+      "CESpeedLead": {"title": tr("有前车速度"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 20, 35, 55, 75]},
+      "CESignalSpeed": {"title": tr("转向灯低于"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {0.0: tr("关闭")}, "presets": [0, 20, 35, 55, 75]},
+      "CEModelStopTime": {"title": tr("预计停车时间"), "min": 0, "max": 10.0, "unit": "s", "labels": {0.0: tr("关闭")}, "presets": [0, 3, 5, 7.7, 10]},
+      "CCMSpeed": {"title": tr("高于速度"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 35, 55, 65, 80]},
+      "CCMSpeedLead": {"title": tr("有前车速度"), "min": 0, "max": max_speed, "unit": speed_unit, "labels": {}, "presets": [0, 35, 55, 65, 80]},
+      "CCMSetSpeedMargin": {"title": tr("设定速度余量"), "min": 0, "max": 30.0 if is_metric else 15.0, "unit": speed_unit, "labels": {}, "presets": [0, 5, 10, 15]},
+      "PulseGlideSpeedDelta": {"title": tr("脉冲滑行差值"), "min": 0.5, "max": 30.0 if is_metric else 15.0, "unit": speed_unit, "labels": {}, "presets": [1, 3, 5, 10]},
     }
     
     spec = specs[key]
@@ -409,7 +409,7 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
     if mode == 0:
       return
 
-    banner_text = tr("Switch to Experimental Mode") if mode == 1 else tr("Switch to Chill Mode")
+    banner_text = tr("切换到实验模式") if mode == 1 else tr("切换到 Chill 模式")
     banner_rect = rl.Rectangle(rect.x, y, content_width, 40)
     gui_label(banner_rect, banner_text, 40, AetherListColors.HEADER, FontWeight.BOLD, alignment=rl.GuiTextAlignment.TEXT_ALIGN_CENTER)
     y += 40 + 12
@@ -419,9 +419,9 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
     
     col_width = (content_width - SECTION_GAP) / 2 if self._uses_two_columns(content_width) else content_width
 
-    draw_section_header(rl.Rectangle(rect.x, y, col_width, SECTION_HEADER_HEIGHT), tr("When"), style=PANEL_STYLE, title_size=38, align_center=True)
+    draw_section_header(rl.Rectangle(rect.x, y, col_width, SECTION_HEADER_HEIGHT), tr("当"), style=PANEL_STYLE, title_size=38, align_center=True)
     if self._uses_two_columns(content_width):
-      draw_section_header(rl.Rectangle(rect.x + col_width + SECTION_GAP, y, col_width, SECTION_HEADER_HEIGHT), tr("For"), style=PANEL_STYLE, title_size=38, align_center=True)
+      draw_section_header(rl.Rectangle(rect.x + col_width + SECTION_GAP, y, col_width, SECTION_HEADER_HEIGHT), tr("针对"), style=PANEL_STYLE, title_size=38, align_center=True)
     
     y += SECTION_HEADER_HEIGHT + SECTION_HEADER_GAP
     
@@ -435,7 +435,7 @@ class ConditionalDriveModeView(AdjustorTogglesPanelView):
         columns=tg_columns)
     else:
       y += self._left_container_h + SECTION_GAP
-      draw_section_header(rl.Rectangle(rect.x, y, col_width, SECTION_HEADER_HEIGHT), tr("For"), style=PANEL_STYLE, title_size=38, align_center=True)
+      draw_section_header(rl.Rectangle(rect.x, y, col_width, SECTION_HEADER_HEIGHT), tr("针对"), style=PANEL_STYLE, title_size=38, align_center=True)
       y += SECTION_HEADER_HEIGHT + SECTION_HEADER_GAP
       self._draw_two_column_tile_grid(
         grid, rect.x, y, col_width,
@@ -506,28 +506,28 @@ class StarPilotLongitudinalLayout(_SettingsPage):
     
     # ── 1. Longitudinal Tuning Rows ──
     self._tune_rows = [
-      SettingRow("AccelProfile", "value", tr_noop("Acceleration Profile"),
-                 subtitle=tr_noop("Choose how quickly openpilot speeds up."),
+      SettingRow("AccelProfile", "value", tr_noop("加速曲线"),
+                 subtitle=tr_noop("选择 openpilot 加速的快慢。"),
                  get_value=self._get_acceleration_profile_label,
                  on_click=self._show_acceleration_profile_selector,
                  visible=self._longitudinal_enabled),
-      SettingRow("DecelProfile", "value", tr_noop("Deceleration Profile"),
-                 subtitle=tr_noop("Choose how firmly openpilot slows the car down."),
+      SettingRow("DecelProfile", "value", tr_noop("减速曲线"),
+                 subtitle=tr_noop("选择 openpilot 减速的力度。"),
                  get_value=self._get_deceleration_profile_label,
                  on_click=self._show_deceleration_profile_selector,
                  visible=self._longitudinal_enabled),
-      SettingRow("HumanLaneChanges", "toggle", tr_noop("Human-Like Lane Changes"),
-                 subtitle=tr_noop("Radar-informed behavior during lane changes."),
+      SettingRow("HumanLaneChanges", "toggle", tr_noop("拟人化变道"),
+                 subtitle=tr_noop("变道时基于雷达的行为。"),
                  get_state=lambda: self._params.get_bool("HumanLaneChanges"),
                  set_state=lambda s: self._params.put_bool("HumanLaneChanges", s),
                  visible=lambda: self._longitudinal_enabled() and starpilot_state.car_state.hasRadar),
-      SettingRow("LeadDetection", "value", tr_noop("Lead Detection Sensitivity"),
-                 subtitle=tr_noop("Control how aggressively openpilot detects and reacts to vehicles ahead."),
+      SettingRow("LeadDetection", "value", tr_noop("前车检测灵敏度"),
+                 subtitle=tr_noop("控制 openpilot 检测和响应前方车辆的激进程度。"),
                  get_value=lambda: f"{self._params.get_int('LeadDetectionThreshold')}%",
                  on_click=lambda: self._show_slider("LeadDetectionThreshold", 25, 50, unit="%"),
                  visible=self._longitudinal_enabled),
-      SettingRow("NavLongitudinalAllowed", "toggle", tr_noop("Use Route Speed Control"),
-                 subtitle=tr_noop("Allow an active navigation route to reduce cruise speed for upcoming turns, ramps, and roundabouts."),
+      SettingRow("NavLongitudinalAllowed", "toggle", tr_noop("使用路线速度控制"),
+                 subtitle=tr_noop("允许活动导航路线在即将转弯、匝道和环岛前降低巡航速度。"),
                  get_state=lambda: self._params.get_bool("NavLongitudinalAllowed"),
                  set_state=lambda s: self._params.put_bool("NavLongitudinalAllowed", s),
                  visible=self._longitudinal_enabled),
@@ -536,57 +536,57 @@ class StarPilotLongitudinalLayout(_SettingsPage):
     # ── 2. Advanced Actuators Rows ──
     adv = self._advanced_enabled
     self._advanced_rows = [
-      SettingRow("EVTuning", "toggle", tr_noop("EV Tuning"),
-                 subtitle=tr_noop("Acceleration tuning for EV and direct-drive vehicles."),
+      SettingRow("EVTuning", "toggle", tr_noop("电动调校"),
+                 subtitle=tr_noop("电动车和直驱车辆的加速调校。"),
                  get_state=lambda: self._params.get_bool("EVTuning"),
                  set_state=self._set_ev_tuning,
                  visible=adv,
                  enabled=lambda: not self._params.get_bool("TruckTuning"),
-                 disabled_label=tr_noop("Truck Active")),
-      SettingRow("TruckTuning", "toggle", tr_noop("Truck Tuning"),
-                 subtitle=tr_noop("Stronger launch and acceleration for heavier vehicles."),
+                 disabled_label=tr_noop("卡车已启用")),
+      SettingRow("TruckTuning", "toggle", tr_noop("卡车调校"),
+                 subtitle=tr_noop("为较重的车辆提供更强的起步和加速。"),
                  get_state=lambda: self._params.get_bool("TruckTuning"),
                  set_state=self._set_truck_tuning,
                  visible=adv,
                  enabled=lambda: not self._params.get_bool("EVTuning"),
-                 disabled_label=tr_noop("EV Active")),
-      SettingRow("TrailerLoad", "value", tr_noop("Trailer Load"),
-                 subtitle=tr_noop("Loaded trailer weight for tow-aware gas, brake, and conservative lateral assist."),
+                 disabled_label=tr_noop("电动已启用")),
+      SettingRow("TrailerLoad", "value", tr_noop("拖车负载"),
+                 subtitle=tr_noop("拖挂感知的油门、刹车和保守横向辅助的拖车负载重量。"),
                  get_value=lambda: f"{self._params.get_int('TrailerLoad')} lb",
                  on_click=lambda: self._show_slider("TrailerLoad", 0, 15000, step=500, unit=" lb"),
                  visible=adv),
-      SettingRow("ActuatorDelay", "value", tr_noop("Actuator Delay"),
-                 subtitle=tr_noop("Time between command and the vehicle's response."),
+      SettingRow("ActuatorDelay", "value", tr_noop("执行器延迟"),
+                 subtitle=tr_noop("指令与车辆响应之间的时间。"),
                  get_value=lambda: f"{self._params.get_float('LongitudinalActuatorDelay'):.2f}s",
                  on_click=lambda: self._show_slider("LongitudinalActuatorDelay", 0.0, 1.0, step=0.01, unit="s", value_type="float"),
                  visible=adv),
-      SettingRow("MaxAccel", "value", tr_noop("Maximum Acceleration"),
-                 subtitle=tr_noop("Strongest acceleration openpilot is allowed to command."),
+      SettingRow("MaxAccel", "value", tr_noop("最大加速度"),
+                 subtitle=tr_noop("openpilot 允许下达的最强加速度。"),
                  get_value=lambda: f"{self._params.get_float('MaxDesiredAcceleration'):.1f}m/s" if self._params.get_float("MaxDesiredAcceleration") is not None else "N/A",
                  on_click=lambda: self._show_slider("MaxDesiredAcceleration", 0.1, 4.0, step=0.1, unit="m/s", value_type="float"),
                  visible=adv),
-      SettingRow("StartAccel", "value", tr_noop("Start Acceleration"),
-                 subtitle=tr_noop("Extra acceleration when moving away from a stop."),
+      SettingRow("StartAccel", "value", tr_noop("起步加速度"),
+                 subtitle=tr_noop("从停车起步时的额外加速度。"),
                  get_value=lambda: f"{self._params.get_float('StartAccel'):.2f}m/s",
                  on_click=lambda: self._show_slider("StartAccel", 0.0, 4.0, step=0.01, unit="m/s", value_type="float"),
                  visible=adv),
-      SettingRow("StopAccel", "value", tr_noop("Stop Acceleration"),
-                 subtitle=tr_noop("Brake force to hold the vehicle at a complete stop."),
+      SettingRow("StopAccel", "value", tr_noop("停止加速度"),
+                 subtitle=tr_noop("完全停车时的制动力保持。"),
                  get_value=lambda: f"{self._params.get_float('StopAccel'):.2f}m/s",
                  on_click=lambda: self._show_slider("StopAccel", -4.0, 0.0, step=0.01, unit="m/s", value_type="float"),
                  visible=adv),
-      SettingRow("StoppingRate", "value", tr_noop("Stopping Rate"),
-                 subtitle=tr_noop("How quickly braking ramps up to bring the car to a stop."),
+      SettingRow("StoppingRate", "value", tr_noop("停止速率"),
+                 subtitle=tr_noop("制动加力到停车的过程有多快。"),
                  get_value=lambda: f"{self._params.get_float('StoppingDecelRate'):.3f}m/s",
                  on_click=lambda: self._show_slider("StoppingDecelRate", 0.001, 1.0, step=0.001, unit="m/s", value_type="float"),
                  visible=self._show_stop_tuning_values),
-      SettingRow("StartSpeed", "value", tr_noop("Start Speed"),
-                 subtitle=tr_noop("Speed where openpilot exits the stopped state."),
+      SettingRow("StartSpeed", "value", tr_noop("起步速度"),
+                 subtitle=tr_noop("openpilot 退出停止状态的速度。"),
                  get_value=lambda: f"{self._params.get_float('VEgoStarting'):.2f}m/s",
                  on_click=lambda: self._show_slider("VEgoStarting", 0.01, 1.0, step=0.01, unit="m/s", value_type="float"),
                  visible=self._show_stop_tuning_values),
-      SettingRow("StopSpeed", "value", tr_noop("Stop Speed"),
-                 subtitle=tr_noop("Speed where openpilot considers the vehicle fully stopped."),
+      SettingRow("StopSpeed", "value", tr_noop("停止速度"),
+                 subtitle=tr_noop("openpilot 认为车辆完全停止的速度。"),
                  get_value=lambda: f"{self._params.get_float('VEgoStopping'):.2f}m/s",
                  on_click=lambda: self._show_slider("VEgoStopping", 0.01, 1.0, step=0.01, unit="m/s", value_type="float"),
                  visible=self._show_stop_tuning_values),
@@ -594,79 +594,79 @@ class StarPilotLongitudinalLayout(_SettingsPage):
 
     # ── 3. Speed Limit Controller (SLC) Rows ──
     self._slc_rows = [
-      SettingRow("SLCFallback", "value", tr_noop("Fallback Speed"),
+      SettingRow("SLCFallback", "value", tr_noop("回退速度"),
                  subtitle="",
                  get_value=lambda: self._profile_label_for_value(self._params.get_int("SLCFallback"), SLC_FALLBACK_OPTIONS),
                  on_click=lambda: self._show_labeled_select("Fallback Speed", "SLCFallback", SLC_FALLBACK_OPTIONS,
                                                             self._params.get_int("SLCFallback"))),
-      SettingRow("SLCOverride", "value", tr_noop("Override Speed"),
+      SettingRow("SLCOverride", "value", tr_noop("覆盖速度"),
                  subtitle="",
                  get_value=lambda: self._profile_label_for_value(self._params.get_int("SLCOverride"), SLC_OVERRIDE_OPTIONS),
                  on_click=lambda: self._show_labeled_select("Override Speed", "SLCOverride", SLC_OVERRIDE_OPTIONS,
                                                             self._params.get_int("SLCOverride"))),
-      SettingRow("SLCPriority", "value", tr_noop("Source Priority"),
+      SettingRow("SLCPriority", "value", tr_noop("来源优先级"),
                  subtitle="",
                  get_value=self._get_priority_value,
                  on_click=self._on_priority_clicked),
-      SettingRow("SetSpeedLimit", "toggle", tr_noop("Auto Match Speed Limits"),
+      SettingRow("SetSpeedLimit", "toggle", tr_noop("自动匹配限速"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("SetSpeedLimit"),
                  set_state=lambda s: self._params.put_bool("SetSpeedLimit", s)),
-      SettingRow("SLCConfirmation", "toggle", tr_noop("Confirm New Limits"),
+      SettingRow("SLCConfirmation", "toggle", tr_noop("确认新限速"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("SLCConfirmation"),
                  set_state=lambda s: self._params.put_bool("SLCConfirmation", s)),
-      SettingRow("SLCConfirmationLower", "toggle", tr_noop("Confirm Lower"),
+      SettingRow("SLCConfirmationLower", "toggle", tr_noop("确认降低"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("SLCConfirmationLower"),
                  set_state=lambda s: self._params.put_bool("SLCConfirmationLower", s),
                  visible=confirmation_on),
-      SettingRow("SLCConfirmationHigher", "toggle", tr_noop("Confirm Higher"),
+      SettingRow("SLCConfirmationHigher", "toggle", tr_noop("确认提高"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("SLCConfirmationHigher"),
                  set_state=lambda s: self._params.put_bool("SLCConfirmationHigher", s),
                  visible=confirmation_on),
-      SettingRow("SLCLookHigher", "value", tr_noop("Higher Lookahead"),
+      SettingRow("SLCLookHigher", "value", tr_noop("更高前瞻"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int('SLCLookaheadHigher')}s",
                  on_click=lambda: self._show_slider("SLCLookaheadHigher", 0, 30, unit="s")),
-      SettingRow("SLCLookLower", "value", tr_noop("Lower Lookahead"),
+      SettingRow("SLCLookLower", "value", tr_noop("更低前瞻"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int('SLCLookaheadLower')}s",
                  on_click=lambda: self._show_slider("SLCLookaheadLower", 0, 30, unit="s")),
-      SettingRow("SLCMapboxFiller", "toggle", tr_noop("Mapbox Fallback"),
+      SettingRow("SLCMapboxFiller", "toggle", tr_noop("Mapbox 回退"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("SLCMapboxFiller"),
                  set_state=lambda s: self._params.put_bool("SLCMapboxFiller", s),
                  visible=self._mapbox_available),
-      SettingRow("ShowSLCOffset", "toggle", tr_noop("Show SLC Offset"),
+      SettingRow("ShowSLCOffset", "toggle", tr_noop("显示限速偏移"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("ShowSLCOffset"),
                  set_state=lambda s: self._params.put_bool("ShowSLCOffset", s)),
-      SettingRow("SpeedLimitSources", "toggle", tr_noop("Show Sources"),
+      SettingRow("SpeedLimitSources", "toggle", tr_noop("显示来源"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("SpeedLimitSources"),
                  set_state=lambda s: self._params.put_bool("SpeedLimitSources", s)),
-      SettingRow("SLCAbbreviatedSources", "toggle", tr_noop("Abbreviated Sources"),
-                 subtitle=tr_noop("Render speed-limit sources as compact text labels (e.g. Dash-45)."),
+      SettingRow("SLCAbbreviatedSources", "toggle", tr_noop("缩写来源"),
+                 subtitle=tr_noop("将限速来源渲染为紧凑文本标签（如 Dash-45）。"),
                  get_state=lambda: self._params.get_bool("SLCAbbreviatedSources"),
                  set_state=lambda s: self._params.put_bool("SLCAbbreviatedSources", s),
                  visible=self._sources_visible),
-      SettingRow("SLCActiveSourcesOnly", "toggle", tr_noop("Active Sources Only"),
-                 subtitle=tr_noop("Hide source rows that have no current speed limit reading."),
+      SettingRow("SLCActiveSourcesOnly", "toggle", tr_noop("仅活动来源"),
+                 subtitle=tr_noop("隐藏没有当前限速读数的来源行。"),
                  get_state=lambda: self._params.get_bool("SLCActiveSourcesOnly"),
                  set_state=lambda s: self._params.put_bool("SLCActiveSourcesOnly", s),
                  visible=self._sources_visible),
-      SettingRow("ConfigureOffsets", "value", tr_noop("SLC Offsets"),
-                 subtitle=tr_noop("Per-limit speed adjustments for the Speed Limit Controller."),
-                 get_value=lambda: tr_noop("Configure"),
+      SettingRow("ConfigureOffsets", "value", tr_noop("限速偏移"),
+                 subtitle=tr_noop("限速控制器的逐限速调整。"),
+                 get_value=lambda: tr_noop("配置"),
                  on_click=self._show_slc_offsets_category),
     ]
 
     # ── 4. Vision Speed Limits Rows ──
     self._vision_speed_limit_rows = [
-      SettingRow("VisionSpeedLimit", "toggle", tr_noop("Vision Detection"),
-                 subtitle=tr_noop("Use the road camera to detect and display speed-limit signs, with optional use by Speed Limit Controller."),
+      SettingRow("VisionSpeedLimit", "toggle", tr_noop("视觉检测"),
+                 subtitle=tr_noop("使用道路摄像头检测并显示限速标志，可选供限速控制器使用。"),
                  get_state=lambda: self._params.get_bool("VisionSpeedLimitDetection"),
                  set_state=lambda s: self._params.put_bool("VisionSpeedLimitDetection", s)),
     ]
@@ -684,19 +684,19 @@ class StarPilotLongitudinalLayout(_SettingsPage):
 
     # ── 5. Adaptive Speed Controls Rows (CES + CSC + CCM) ──
     self._curve_speed_controller_rows = [
-      SettingRow("CalibratedLatAccel", "value", tr_noop("Calibrated Lateral Accel"),
-                 subtitle=tr_noop("The learned lateral acceleration from collected driving data. Higher values allow faster cornering."),
+      SettingRow("CalibratedLatAccel", "value", tr_noop("已校准横向加速度"),
+                 subtitle=tr_noop("从收集的驾驶数据中学习的横向加速度。值越高过弯越快。"),
                  get_value=lambda: f"{self._params_memory.get_float('CalibratedLateralAcceleration'):.2f} m/s",
                  on_click=None,
                  visible=csc_on),
-      SettingRow("CalibrationProgress", "value", tr_noop("Calibration Progress"),
-                 subtitle=tr_noop("How much curve data has been collected. Normal for the value to stay low."),
+      SettingRow("CalibrationProgress", "value", tr_noop("校准进度"),
+                 subtitle=tr_noop("已收集多少弯道数据。数值保持较低属正常。"),
                  get_value=lambda: f"{self._params_memory.get_float('CalibrationProgress'):.2f}%",
                  on_click=None,
                  visible=csc_on),
-      SettingRow("ResetCurve", "action", tr_noop("Reset Curve Data"),
-                 subtitle=tr_noop("Reset collected user data for Curve Speed Controller."),
-                 action_text=tr_noop("Reset"),
+      SettingRow("ResetCurve", "action", tr_noop("重置弯道数据"),
+                 subtitle=tr_noop("重置弯道速度控制器收集的用户数据。"),
+                 action_text=tr_noop("重置"),
                  action_danger=True,
                  on_click=self._reset_curve_data,
                  visible=csc_on),
@@ -704,128 +704,128 @@ class StarPilotLongitudinalLayout(_SettingsPage):
 
     # ── 6. Driving Personalities Rows ──
     self._personality_rows = [
-      SettingRow("Traffic", "value", tr_noop("Traffic"),
-                 subtitle=tr_noop("Configure follow distance, smoothness, and response for traffic conditions."),
-                 get_value=lambda: tr_noop("Configure"),
+      SettingRow("Traffic", "value", tr_noop("拥堵"),
+                 subtitle=tr_noop("配置拥堵情况下的跟车距离、平顺性和响应。"),
+                 get_value=lambda: tr_noop("配置"),
                  on_click=lambda: self._show_personality_profile_category("Traffic")),
-      SettingRow("Aggressive", "value", tr_noop("Aggressive"),
-                 subtitle=tr_noop("Configure follow distance, smoothness, and response for aggressive driving."),
-                 get_value=lambda: tr_noop("Configure"),
+      SettingRow("Aggressive", "value", tr_noop("激进"),
+                 subtitle=tr_noop("配置激进驾驶下的跟车距离、平顺性和响应。"),
+                 get_value=lambda: tr_noop("配置"),
                  on_click=lambda: self._show_personality_profile_category("Aggressive")),
-      SettingRow("Standard", "value", tr_noop("Standard"),
-                 subtitle=tr_noop("Configure follow distance, smoothness, and response for everyday driving."),
-                 get_value=lambda: tr_noop("Configure"),
+      SettingRow("Standard", "value", tr_noop("标准"),
+                 subtitle=tr_noop("配置日常驾驶下的跟车距离、平顺性和响应。"),
+                 get_value=lambda: tr_noop("配置"),
                  on_click=lambda: self._show_personality_profile_category("Standard")),
-      SettingRow("Relaxed", "value", tr_noop("Relaxed"),
-                 subtitle=tr_noop("Configure follow distance, smoothness, and response for relaxed driving."),
-                 get_value=lambda: tr_noop("Configure"),
+      SettingRow("Relaxed", "value", tr_noop("舒缓"),
+                 subtitle=tr_noop("配置舒缓驾驶下的跟车距离、平顺性和响应。"),
+                 get_value=lambda: tr_noop("配置"),
                  on_click=lambda: self._show_personality_profile_category("Relaxed")),
     ]
 
     # ── 7. Daily QOL & Weather Rows ──
     self._daily_rows = [
-      SettingRow("CustomCruise", "value", tr_noop("Cruise Interval"),
+      SettingRow("CustomCruise", "value", tr_noop("巡航间隔"),
                  subtitle="",
                  get_value=lambda: f"{max(1, self._params.get_int('CustomCruise'))}{self._speed_unit()}",
                  on_click=lambda: self._show_slider("CustomCruise", 1, 150 if self._is_metric() else 99,
                                                     unit=self._speed_unit(),
                                                     current_value=max(1, self._params.get_int("CustomCruise"))),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("CustomCruiseLong", "value", tr_noop("Cruise Long"),
+      SettingRow("CustomCruiseLong", "value", tr_noop("长巡航"),
                  subtitle="",
                  get_value=lambda: f"{max(1, self._params.get_int('CustomCruiseLong'))}{self._speed_unit()}",
                  on_click=lambda: self._show_slider("CustomCruiseLong", 1, 150 if self._is_metric() else 99,
                                                     unit=self._speed_unit(),
                                                     current_value=max(1, self._params.get_int("CustomCruiseLong"))),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("ForceStops", "toggle", tr_noop("Force Stops"),
+      SettingRow("ForceStops", "toggle", tr_noop("强制停车"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("ForceStops"),
                  set_state=lambda s: self._params.put_bool("ForceStops", s),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("ForceStopDist", "value", tr_noop("Force Stop Offset"),
+      SettingRow("ForceStopDist", "value", tr_noop("强制停车偏移"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int('ForceStopDistanceOffset'):+d} ft",
                  on_click=lambda: self._show_slider("ForceStopDistanceOffset", -20, 20, unit=" ft"),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._params.get_bool("ForceStops")),
-      SettingRow("RadarTakeoffs", "toggle", tr_noop("Radar for Takeoffs"),
-                 subtitle=tr_noop("Turns on/off using radar data to track leads at standstill, making following/takeoffs more responsive once leads move."),
+      SettingRow("RadarTakeoffs", "toggle", tr_noop("雷达起步"),
+                 subtitle=tr_noop("开启/关闭使用雷达数据跟踪停止的前车，使前车移动后的跟随/起步更灵敏。"),
                  get_state=lambda: self._params.get_bool("RadarTakeoffs"),
                  set_state=lambda s: self._params.put_bool("RadarTakeoffs", s),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and starpilot_state.car_state.hasRadar),
-      SettingRow("ForceStandstill", "toggle", tr_noop("Force Standstill"),
+      SettingRow("ForceStandstill", "toggle", tr_noop("强制静止"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("ForceStandstill"),
                  set_state=lambda s: self._params.put_bool("ForceStandstill", s),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("IncStoppedDist", "value", tr_noop("Stopped Distance"),
+      SettingRow("IncStoppedDist", "value", tr_noop("停止距离"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int('IncreasedStoppedDistance')}{self._distance_unit()}",
                  on_click=lambda: self._show_slider("IncreasedStoppedDistance", *self._distance_range(),
                                                     unit=self._distance_unit()),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("SetSpeedOffset", "value", tr_noop("Set Speed Offset"),
+      SettingRow("SetSpeedOffset", "value", tr_noop("设定速度偏移"),
                  subtitle="",
                  get_value=lambda: f"+{self._params.get_int('SetSpeedOffset')}{self._speed_unit()}",
                  on_click=lambda: self._show_slider("SetSpeedOffset", 0, 150 if self._is_metric() else 99,
                                                     unit=self._speed_unit()),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("PulseGlideSpeedDelta", "value", tr_noop("Pulse and Glide Delta"),
-                 subtitle=tr_noop("Developer-only: coast this far below the current cruise target before accelerating back up."),
+      SettingRow("PulseGlideSpeedDelta", "value", tr_noop("脉冲滑行差值"),
+                 subtitle=tr_noop("仅开发者：在加速回升前，低于当前巡航目标这么多进行滑行。"),
                  get_value=lambda: f"{self._params.get_float('PulseGlideSpeedDelta'):.1f}{self._speed_unit()}",
                  on_click=lambda: self._show_slider("PulseGlideSpeedDelta"),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._developer_feature_access()),
-      SettingRow("MapGears", "toggle", tr_noop("Map Gears"),
+      SettingRow("MapGears", "toggle", tr_noop("档位映射"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("MapGears"),
                  set_state=lambda s: self._params.put_bool("MapGears", s),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("MapAccel", "toggle", tr_noop("Map Acceleration"),
+      SettingRow("MapAccel", "toggle", tr_noop("加速映射"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("MapAcceleration"),
                  set_state=lambda s: self._params.put_bool("MapAcceleration", s),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._params.get_bool("MapGears")),
-      SettingRow("MapDecel", "toggle", tr_noop("Map Deceleration"),
+      SettingRow("MapDecel", "toggle", tr_noop("减速映射"),
                  subtitle="",
                  get_state=lambda: self._params.get_bool("MapDeceleration"),
                  set_state=lambda s: self._params.put_bool("MapDeceleration", s),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._params.get_bool("MapGears")),
-      SettingRow("WeatherPresets", "toggle", tr_noop("Weather Condition Offsets"),
-                 subtitle=tr_noop("Automatically adjust driving behavior based on real-time weather."),
+      SettingRow("WeatherPresets", "toggle", tr_noop("天气状况偏移"),
+                 subtitle=tr_noop("根据实时天气自动调整驾驶行为。"),
                  get_state=lambda: self._params.get_bool("WeatherPresets"),
                  set_state=lambda s: self._params.put_bool("WeatherPresets", s),
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
-      SettingRow("LowVisibility", "value", tr_noop("Low Visibility"),
-                 subtitle=tr_noop("Adjust parameters for fog, mist, and poor visibility conditions."),
-                 get_value=lambda: tr_noop("Configure"),
-                 on_click=lambda: self._show_weather_offsets_category("LowVisibility", tr_noop("Low Visibility")),
+      SettingRow("LowVisibility", "value", tr_noop("低能见度"),
+                 subtitle=tr_noop("调整雾、霾和低能见度情况的参数。"),
+                 get_value=lambda: tr_noop("配置"),
+                 on_click=lambda: self._show_weather_offsets_category("LowVisibility", tr_noop("低能见度")),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._params.get_bool("WeatherPresets")),
-      SettingRow("Rain", "value", tr_noop("Rain"),
-                 subtitle=tr_noop("Adjust parameters for light to moderate rain."),
-                 get_value=lambda: tr_noop("Configure"),
-                 on_click=lambda: self._show_weather_offsets_category("Rain", tr_noop("Rain")),
+      SettingRow("Rain", "value", tr_noop("雨天"),
+                 subtitle=tr_noop("调整小雨到中雨的参数。"),
+                 get_value=lambda: tr_noop("配置"),
+                 on_click=lambda: self._show_weather_offsets_category("Rain", tr_noop("雨天")),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._params.get_bool("WeatherPresets")),
-      SettingRow("RainStorm", "value", tr_noop("Rainstorms"),
-                 subtitle=tr_noop("Adjust parameters for heavy rain and storms."),
-                 get_value=lambda: tr_noop("Configure"),
-                 on_click=lambda: self._show_weather_offsets_category("RainStorm", tr_noop("Rainstorms")),
+      SettingRow("RainStorm", "value", tr_noop("暴雨"),
+                 subtitle=tr_noop("调整大雨和暴雨的参数。"),
+                 get_value=lambda: tr_noop("配置"),
+                 on_click=lambda: self._show_weather_offsets_category("RainStorm", tr_noop("暴雨")),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._params.get_bool("WeatherPresets")),
-      SettingRow("Snow", "value", tr_noop("Snow"),
-                 subtitle=tr_noop("Adjust parameters for snowy and icy conditions."),
-                 get_value=lambda: tr_noop("Configure"),
-                 on_click=lambda: self._show_weather_offsets_category("Snow", tr_noop("Snow")),
+      SettingRow("Snow", "value", tr_noop("雪天"),
+                 subtitle=tr_noop("调整冰雪路况的参数。"),
+                 get_value=lambda: tr_noop("配置"),
+                 on_click=lambda: self._show_weather_offsets_category("Snow", tr_noop("雪天")),
                  visible=lambda: self._params.get_bool("QOLLongitudinal") and self._params.get_bool("WeatherPresets")),
-      SettingRow("WeatherKey", "action", tr_noop("Set Weather Key"),
-                 subtitle=tr_noop("Enter or remove your weather data API key."),
-                 action_text=tr_noop("Set Key"),
+      SettingRow("WeatherKey", "action", tr_noop("设置天气密钥"),
+                 subtitle=tr_noop("输入或删除你的天气数据 API 密钥。"),
+                 action_text=tr_noop("设置密钥"),
                  on_click=self._set_weather_key,
                  visible=lambda: self._params.get_bool("QOLLongitudinal")),
     ]
 
     self._manager_view = LongitudinalManagerView(
       self, [],
-      header_title=tr_noop("Gas/Brake"),
-      header_subtitle=tr_noop("Fine-tune acceleration, braking, and driving behavior."),
+      header_title=tr_noop("油门/刹车"),
+      header_subtitle=tr_noop("微调加速、刹车和驾驶行为。"),
       panel_style=PANEL_STYLE,
     )
 
@@ -847,9 +847,9 @@ class StarPilotLongitudinalLayout(_SettingsPage):
 
     self._sub_panels["csc"] = AetherSettingsView(
       self,
-      [SettingSection(tr("Curve Speed Controller"), self._curve_speed_controller_rows)],
-      header_title=tr("Curve Speed Controller"),
-      header_subtitle=tr("Configure speed control on curves and reset collected calibration data."),
+      [SettingSection(tr("弯道速度控制器"), self._curve_speed_controller_rows)],
+      header_title=tr("弯道速度控制器"),
+      header_subtitle=tr("配置弯道速度控制并重置已收集的校准数据。"),
       parent_toggle=pt_csc,
       panel_style=PANEL_STYLE,
     )
@@ -860,48 +860,48 @@ class StarPilotLongitudinalLayout(_SettingsPage):
     self._sub_panels["tune"] = AetherSettingsView(
       self,
       [SettingSection(title="", rows=self._tune_rows)],
-      header_title=tr_noop("Longitudinal Tuning"),
-      header_subtitle=tr_noop("Configure acceleration profiles, lane changes, and route speed control."),
+      header_title=tr_noop("纵向调校"),
+      header_subtitle=tr_noop("配置加速曲线、车道变更和路线速度控制。"),
       parent_toggle=pt_tune,
       panel_style=PANEL_STYLE,
     )
     self._sub_panels["advanced"] = AetherSettingsView(
       self,
       [SettingSection(title="", rows=self._advanced_rows)],
-      header_title=tr_noop("Advanced Actuators"),
-      header_subtitle=tr_noop("Adjust actuator delay, EV/Truck tuning, and launch/stop speeds/rates."),
+      header_title=tr_noop("高级执行器"),
+      header_subtitle=tr_noop("调整执行器延迟、电动/卡车调校、起步/停止速度与速率。"),
       parent_toggle=pt_advanced,
       panel_style=PANEL_STYLE,
     )
     self._sub_panels["slc"] = AetherSettingsView(
       self,
       [SettingSection(title="", rows=self._slc_rows)],
-      header_title=tr_noop("Speed Limit Controller"),
-      header_subtitle=tr_noop("Manage auto speed matching, confirmation, offsets, and source priority."),
+      header_title=tr_noop("限速控制器"),
+      header_subtitle=tr_noop("管理自动速度匹配、确认、偏移和来源优先级。"),
       parent_toggle=pt_slc,
       panel_style=PANEL_STYLE,
     )
     self._sub_panels["vision_speed_limits"] = AetherSettingsView(
       self,
       [SettingSection(title="", rows=self._vision_speed_limit_rows)],
-      header_title=tr_noop("Vision Speed Limits"),
-      header_subtitle=tr_noop("Detect and display speed-limit signs without enabling the Speed Limit Controller."),
+      header_title=tr_noop("视觉限速"),
+      header_subtitle=tr_noop("检测并显示限速标志，无需开启限速控制器。"),
       parent_toggle=pt_vision_speed_limits,
       panel_style=PANEL_STYLE,
     )
     self._sub_panels["personality"] = AetherSettingsView(
       self,
       [SettingSection(title="", rows=self._personality_rows)],
-      header_title=tr_noop("Driving Personalities"),
-      header_subtitle=tr_noop("Customize follow distance and jerk/response metrics for each personality profile."),
+      header_title=tr_noop("驾驶风格"),
+      header_subtitle=tr_noop("为每种驾驶风格自定义跟车距离和急动度/响应指标。"),
       parent_toggle=pt_personality,
       panel_style=PANEL_STYLE,
     )
     self._sub_panels["daily"] = AetherSettingsView(
       self,
       [SettingSection(title="", rows=self._daily_rows)],
-      header_title=tr_noop("Daily QOL & Weather"),
-      header_subtitle=tr_noop("Configure cruise intervals, standstill behaviors, gear mapping, and weather presets."),
+      header_title=tr_noop("日常便利与天气"),
+      header_subtitle=tr_noop("配置巡航间隔、停车行为、档位映射和天气预设。"),
       parent_toggle=pt_daily,
       panel_style=PANEL_STYLE,
     )
@@ -935,7 +935,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
       if not starpilot_state.car_state.hasDashSpeedLimits and "Dashboard" in secondary_options:
         secondary_options.remove("Dashboard")
       selected_secondary = current_secondary if current_secondary in secondary_options else "None"
-      secondary_dialog = MultiOptionDialog(tr("SLC Secondary Priority"), secondary_options, selected_secondary,
+      secondary_dialog = MultiOptionDialog(tr("限速次级优先级"), secondary_options, selected_secondary,
                                            callback=lambda res: on_secondary_select(primary, secondary_dialog, res))
       gui_app.push_widget(secondary_dialog)
 
@@ -948,7 +948,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
         return
       show_secondary_dialog(primary_dialog.selection)
 
-    primary_dialog = MultiOptionDialog(tr("SLC Primary Priority"), primary_options, current_primary, callback=on_primary_select)
+    primary_dialog = MultiOptionDialog(tr("限速主优先级"), primary_options, current_primary, callback=on_primary_select)
     gui_app.push_widget(primary_dialog)
 
   def _get_acceleration_profile_label(self) -> str:
@@ -991,11 +991,11 @@ class StarPilotLongitudinalLayout(_SettingsPage):
 
   def _get_conditional_mode_label(self) -> str:
     if self._params.get_bool("ConditionalExperimental"):
-      return tr("Conditional Experimental")
+      return tr("条件实验模式")
     elif self._params.get_bool("ConditionalChill"):
-      return tr("Conditional Chill")
+      return tr("条件 Chill")
     else:
-      return tr("OFF")
+      return tr("关闭")
 
   def _show_conditional_mode_selector(self):
     options = ["OFF", "Conditional Experimental", "Conditional Chill"]
@@ -1013,7 +1013,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
           self._params.put_bool("ConditionalExperimental", False)
           self._params.put_bool("ConditionalChill", True)
 
-    dialog = MultiOptionDialog(tr("Conditional Drive Mode"), options, current, callback=on_select)
+    dialog = MultiOptionDialog(tr("条件驾驶模式"), options, current, callback=on_select)
     gui_app.push_widget(dialog)
 
   def _reset_curve_data(self):
@@ -1025,7 +1025,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
         self._params_memory.put_float("CalibratedLateralAcceleration", 2.00)
         self._params_memory.put_float("CalibrationProgress", 0.0)
 
-    gui_app.push_widget(ConfirmDialog(tr_noop("Reset Curve Data?"), tr_noop("Confirm"), callback=on_close))
+    gui_app.push_widget(ConfirmDialog(tr_noop("重置弯道数据？"), tr_noop("确认"), callback=on_close))
 
   def _reset_profile(self, profile: str):
     def on_close(res):
@@ -1033,7 +1033,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
         for key in ["Follow", "FollowHigh", "JerkAcceleration", "JerkDeceleration", "JerkDanger", "JerkSpeedDecrease", "JerkSpeed"]:
           self._params.remove(profile + key)
 
-    gui_app.push_widget(ConfirmDialog(tr_noop("Reset to Defaults?"), tr_noop("Confirm"), callback=on_close))
+    gui_app.push_widget(ConfirmDialog(tr_noop("重置为默认值？"), tr_noop("确认"), callback=on_close))
 
   def _is_metric(self) -> bool:
     return self._params.get_bool("IsMetric")
@@ -1121,8 +1121,8 @@ class StarPilotLongitudinalLayout(_SettingsPage):
     self._sub_panels["slc_offsets"] = AetherSettingsView(
       self,
       [SettingSection(title="", rows=self._slc_offset_rows)],
-      header_title=tr_noop("SLC Offsets"),
-      header_subtitle=tr_noop("Per-limit speed adjustments for the Speed Limit Controller."),
+      header_title=tr_noop("限速偏移"),
+      header_subtitle=tr_noop("限速控制器的逐限速调整。"),
       panel_style=PANEL_STYLE,
     )
     self._wire_sub_panels()
@@ -1135,7 +1135,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
       self,
       [SettingSection(title="", rows=rows)],
       header_title=tr_noop(f"{profile} Profile"),
-      header_subtitle=tr_noop("Customize follow distance and smoothness for this driving personality."),
+      header_subtitle=tr_noop("为此驾驶风格自定义跟车距离和平顺性。"),
       panel_style=PANEL_STYLE,
     )
     self._wire_sub_panels()
@@ -1148,7 +1148,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
       self,
       [SettingSection(title="", rows=rows)],
       header_title=tr_noop(title),
-      header_subtitle=tr_noop("Adjust driving parameters for this weather condition."),
+      header_subtitle=tr_noop("为此天气状况调整驾驶参数。"),
       panel_style=PANEL_STYLE,
     )
     self._wire_sub_panels()
@@ -1159,42 +1159,42 @@ class StarPilotLongitudinalLayout(_SettingsPage):
     follow_max = 2.5 if profile == "Traffic" else 3.0
     p = profile
     rows = [
-      SettingRow(f"{p}Follow", "value", tr_noop("Follow Distance"),
+      SettingRow(f"{p}Follow", "value", tr_noop("跟车距离"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_float(p + 'Follow'):.2f}s",
                  on_click=lambda: self._show_slider(p + "Follow", follow_min, follow_max, step=0.05, unit="s", value_type="float")),
     ]
     if profile != "Traffic":
       rows.append(
-        SettingRow(f"{p}FollowHigh", "value", tr_noop("Follow High"),
+        SettingRow(f"{p}FollowHigh", "value", tr_noop("高速跟车距离"),
                    subtitle="",
                    get_value=lambda: f"{self._params.get_float(p + 'FollowHigh'):.2f}s",
                    on_click=lambda: self._show_slider(p + "FollowHigh", 1.0, 3.0, step=0.05, unit="s", value_type="float"))
       )
     rows.extend([
-      SettingRow(f"{p}JerkAccel", "value", tr_noop("Accel Smoothness"),
+      SettingRow(f"{p}JerkAccel", "value", tr_noop("加速平顺性"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int(p + 'JerkAcceleration')}%",
                  on_click=lambda: self._show_slider(p + "JerkAcceleration", 25, 200, step=5, unit="%")),
-      SettingRow(f"{p}JerkDecel", "value", tr_noop("Brake Smoothness"),
+      SettingRow(f"{p}JerkDecel", "value", tr_noop("刹车平顺性"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int(p + 'JerkDeceleration')}%",
                  on_click=lambda: self._show_slider(p + "JerkDeceleration", 25, 200, step=5, unit="%")),
-      SettingRow(f"{p}JerkDanger", "value", tr_noop("Safety Gap Bias"),
+      SettingRow(f"{p}JerkDanger", "value", tr_noop("安全间隙偏置"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int(p + 'JerkDanger')}%",
                  on_click=lambda: self._show_slider(p + "JerkDanger", 25, 200, step=5, unit="%")),
-      SettingRow(f"{p}JerkSpeedDec", "value", tr_noop("Slowdown Response"),
+      SettingRow(f"{p}JerkSpeedDec", "value", tr_noop("减速响应"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int(p + 'JerkSpeedDecrease')}%",
                  on_click=lambda: self._show_slider(p + "JerkSpeedDecrease", 25, 200, step=5, unit="%")),
-      SettingRow(f"{p}JerkSpeed", "value", tr_noop("Speed-Up Response"),
+      SettingRow(f"{p}JerkSpeed", "value", tr_noop("加速响应"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int(p + 'JerkSpeed')}%",
                  on_click=lambda: self._show_slider(p + "JerkSpeed", 25, 200, step=5, unit="%")),
-      SettingRow(f"{p}Reset", "action", tr_noop("Reset to Defaults"),
+      SettingRow(f"{p}Reset", "action", tr_noop("重置为默认值"),
                  subtitle="",
-                 action_text=tr_noop("Reset"),
+                 action_text=tr_noop("重置"),
                  action_danger=True,
                  on_click=lambda: self._reset_profile(p)),
     ])
@@ -1203,20 +1203,20 @@ class StarPilotLongitudinalLayout(_SettingsPage):
   def _build_weather_offsets_rows(self, suffix: str) -> list[SettingRow]:
     s = suffix
     return [
-      SettingRow(f"Follow{s}", "value", tr_noop("Following Distance"),
+      SettingRow(f"Follow{s}", "value", tr_noop("跟车距离"),
                  subtitle="",
                  get_value=lambda: f"+{self._params.get_int('IncreaseFollowing' + s)}s",
                  on_click=lambda: self._show_slider("IncreaseFollowing" + s, 0, 3, step=0.5, unit="s")),
-      SettingRow(f"StoppedDist{s}", "value", tr_noop("Stopped Distance"),
+      SettingRow(f"StoppedDist{s}", "value", tr_noop("停止距离"),
                  subtitle="",
                  get_value=lambda: f"+{self._params.get_int('IncreasedStoppedDistance' + s)}{self._distance_unit()}",
                  on_click=lambda: self._show_slider("IncreasedStoppedDistance" + s, *self._distance_range(),
                                                     unit=self._distance_unit())),
-      SettingRow(f"ReduceAccel{s}", "value", tr_noop("Reduce Accel"),
+      SettingRow(f"ReduceAccel{s}", "value", tr_noop("降低加速"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int('ReduceAcceleration' + s)}%",
                  on_click=lambda: self._show_slider("ReduceAcceleration" + s, 0, 99, unit="%")),
-      SettingRow(f"ReduceLateral{s}", "value", tr_noop("Reduce Curve Speed"),
+      SettingRow(f"ReduceLateral{s}", "value", tr_noop("降低弯道速度"),
                  subtitle="",
                  get_value=lambda: f"{self._params.get_int('ReduceLateralAcceleration' + s)}%",
                  on_click=lambda: self._show_slider("ReduceLateralAcceleration" + s, 0, 99, unit="%")),
@@ -1234,7 +1234,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
               self._params.put("WeatherToken", text)
 
           self._keyboard.reset(min_text_size=1)
-          self._keyboard.set_title(tr_noop("Weather API Key"), "")
+          self._keyboard.set_title(tr_noop("天气 API 密钥"), "")
           self._keyboard.set_text("")
           self._keyboard.set_callback(lambda result: on_key(result, self._keyboard.text))
           gui_app.push_widget(self._keyboard)
@@ -1244,7 +1244,7 @@ class StarPilotLongitudinalLayout(_SettingsPage):
             if res == DialogResult.CONFIRM:
               self._params.remove("WeatherToken")
 
-          gui_app.push_widget(ConfirmDialog(tr_noop("Remove API Key?"), tr_noop("Confirm"), callback=on_confirm))
+          gui_app.push_widget(ConfirmDialog(tr_noop("删除 API 密钥？"), tr_noop("确认"), callback=on_confirm))
 
-    dialog = MultiOptionDialog(tr_noop("Weather API Key"), options, "ADD", callback=on_select)
+    dialog = MultiOptionDialog(tr_noop("天气 API 密钥"), options, "ADD", callback=on_select)
     gui_app.push_widget(dialog)

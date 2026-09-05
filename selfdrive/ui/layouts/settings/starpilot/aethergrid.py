@@ -3331,15 +3331,15 @@ class AetherSettingsView(PanelManagerView):
       if self._parent_toggle and not self._parent_toggle.get_state():
         draw_empty_state_card(
           rl.Rectangle(rect.x, y, width, rect.height - (y - rect.y)),
-          tr("Enable {} to configure settings.").format(tr(self._parent_toggle.label)),
+          tr("开启 {} 以配置设置。").format(tr(self._parent_toggle.label)),
           "",
           style=self._panel_style,
         )
       elif not self._parent_toggle:
         draw_empty_state_card(
           rl.Rectangle(rect.x, y, width, rect.height - (y - rect.y)),
-          tr("No settings to display"),
-          tr("All options in this panel are hidden or unavailable."),
+          tr("没有可显示的设置"),
+          tr("此面板所有选项已隐藏或不可用。"),
           style=self._panel_style,
         )
       return
@@ -3773,7 +3773,7 @@ class AetherTile(Widget):
     draw_text_fit_common(font, title_text, rl.Vector2(rx + content_pad, title_y), max_text_width, title_size, color=title_color)
     
     if not enabled and getattr(self, "_disabled_label", ""):
-      display_status = tr(self._disabled_label) if self._disabled_label else tr("LOCKED")
+      display_status = tr(self._disabled_label) if self._disabled_label else tr("已锁定")
       status_color = rl.Color(160, 160, 175, 255)
     else:
       display_status = status_text
@@ -3979,7 +3979,7 @@ class ToggleTile(AetherTile):
     if not enabled:
       title_lines = wrap_text(self._font, self.title, max_w, title_size, max_lines=2)
       desc_size = max(26, int(round(28 * text_scale)))
-      disabled_text = tr(self._disabled_label) if self._disabled_label else tr("LOCKED")
+      disabled_text = tr(self._disabled_label) if self._disabled_label else tr("已锁定")
       desc_lines = wrap_text(self._font_desc, disabled_text, max_w, desc_size, max_lines=2)
 
       total_text_h = len(title_lines) * (title_size + 4) + len(desc_lines) * (desc_size + 2) + 6
@@ -4063,7 +4063,7 @@ class RowToggleTile(ToggleTile):
     enabled = self.enabled
     active = self.get_state()
     
-    status_text = tr("Enabled") if active else tr("Disabled")
+    status_text = tr("已启用") if active else tr("已禁用")
     status_color_override = None if active else rl.Color(160, 160, 175, 255)
 
     def draw_led(rx, ry, rw, rh, content_pad, accent):
@@ -4787,8 +4787,8 @@ class AetherSliderDialog(Widget):
     c_face = snap_rect(rl.Rectangle(c_face_x, c_face_y, button_width, button_height))
     draw_rounded_fill(c_face, rl.Color(34, 38, 48, 255), radius_px=41)
     draw_rounded_stroke(c_face, rl.Color(255, 255, 255, 20), radius_px=41)
-    cts = measure_text_cached(self._font_btn, tr("CANCEL"), 49)
-    rl.draw_text_ex(self._font_btn, tr("CANCEL"), rl.Vector2(round(c_face_x + (button_width - cts.x) / 2), round(c_face_y + (button_height - cts.y) / 2)), 49, 0, rl.WHITE)
+    cts = measure_text_cached(self._font_btn, tr("取消"), 49)
+    rl.draw_text_ex(self._font_btn, tr("取消"), rl.Vector2(round(c_face_x + (button_width - cts.x) / 2), round(c_face_y + (button_height - cts.y) / 2)), 49, 0, rl.WHITE)
 
     # OK Button
     o_face_x = self._ok_rect.x
@@ -4796,8 +4796,8 @@ class AetherSliderDialog(Widget):
     o_face = snap_rect(rl.Rectangle(o_face_x, o_face_y, button_width, button_height))
     draw_rounded_fill(o_face, self._color, radius_px=41)
     draw_rounded_stroke(o_face, with_alpha(self._color, 150), radius_px=41)
-    ots = measure_text_cached(self._font_btn, tr("OK"), 49)
-    rl.draw_text_ex(self._font_btn, tr("OK"), rl.Vector2(round(o_face_x + (button_width - ots.x) / 2), round(o_face_y + (button_height - ots.y) / 2)), 49, 0, rl.WHITE)
+    ots = measure_text_cached(self._font_btn, tr("确定"), 49)
+    rl.draw_text_ex(self._font_btn, tr("确定"), rl.Vector2(round(o_face_x + (button_width - ots.x) / 2), round(o_face_y + (button_height - ots.y) / 2)), 49, 0, rl.WHITE)
     return DialogResult.NO_ACTION
 
 
@@ -5017,16 +5017,16 @@ class AetherMultiSelectDialog(Widget):
     c_rect = rl.Rectangle(self._cancel_rect.x + c_off, self._cancel_rect.y + c_off, self._cancel_rect.width - c_off * 2, self._cancel_rect.height - c_off * 2)
     draw_rounded_fill(c_rect, rl.Color(255, 255, 255, 12), radius_px=button_height / 2)
     draw_rounded_stroke(c_rect, rl.Color(255, 255, 255, 32), radius_px=button_height / 2)
-    cts = measure_text_cached(self._font_btn, tr("Cancel"), 38)
-    rl.draw_text_ex(self._font_btn, tr("Cancel"), rl.Vector2(round(c_rect.x + (c_rect.width - cts.x) / 2), round(c_rect.y + (c_rect.height - cts.y) / 2)), 38, 0, rl.WHITE)
+    cts = measure_text_cached(self._font_btn, tr("取消"), 38)
+    rl.draw_text_ex(self._font_btn, tr("取消"), rl.Vector2(round(c_rect.x + (c_rect.width - cts.x) / 2), round(c_rect.y + (c_rect.height - cts.y) / 2)), 38, 0, rl.WHITE)
 
     # OK Button
     o_off = self._ok_offset * 4.0
     o_rect = rl.Rectangle(self._ok_rect.x + o_off, self._ok_rect.y + o_off, self._ok_rect.width - o_off * 2, self._ok_rect.height - o_off * 2)
     draw_rounded_fill(o_rect, self._color, radius_px=button_height / 2)
     draw_rounded_stroke(o_rect, mix_colors(self._color, rl.WHITE, 0.4, alpha=160), thickness=2, radius_px=button_height / 2)
-    ots = measure_text_cached(self._font_btn, tr("OK"), 38)
-    rl.draw_text_ex(self._font_btn, tr("OK"), rl.Vector2(round(o_rect.x + (o_rect.width - ots.x) / 2), round(o_rect.y + (o_rect.height - ots.y) / 2)), 38, 0, rl.WHITE)
+    ots = measure_text_cached(self._font_btn, tr("确定"), 38)
+    rl.draw_text_ex(self._font_btn, tr("确定"), rl.Vector2(round(o_rect.x + (o_rect.width - ots.x) / 2), round(o_rect.y + (o_rect.height - ots.y) / 2)), 38, 0, rl.WHITE)
 
 
 class AetherMultiSelectTile(AetherTile):

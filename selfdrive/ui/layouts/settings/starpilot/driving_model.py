@@ -358,7 +358,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
     self._draw_model_info(info_rect, entry, current=True)
 
     chip_rect = rl.Rectangle(rect.x + rect.width - ACTION_WIDTH + 35, rect.y + (rect.height - 61) / 2, ACTION_WIDTH - 70, 61)
-    AetherChip(tr("Current"), PANEL_STYLE.current_fill, PANEL_STYLE.current_border, AetherListColors.HEADER, font_size=26).render(chip_rect)
+    AetherChip(tr("当前"), PANEL_STYLE.current_fill, PANEL_STYLE.current_border, AetherListColors.HEADER, font_size=26).render(chip_rect)
 
   def _draw_relocated_header(self, x: float, y: float, width: float):
     # Buttons placed horizontally
@@ -388,7 +388,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
 
     if randomizer_on:
       blacklisted = [m.strip() for m in (self._controller._params.get("BlacklistedModels", encoding="utf-8") or "").split(",") if m.strip()]
-      bl_label = tr(f"Blacklist: {len(blacklisted)} blocked") if blacklisted else tr("Blacklist")
+      bl_label = tr(f"Blacklist: {len(blacklisted)} blocked") if blacklisted else tr("黑名单")
       bl_w = (usable - gap) / 2
       rt_w = (usable - gap) / 2
       bl_pill = rl.Rectangle(left, pill_y, bl_w, pill_h)
@@ -398,7 +398,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
                        AetherListColors.HEADER, font_size=28, roundness=0.35)
       self._interactive_rects["mgmt:blacklist"] = bl_pill
       rt_pill = rl.Rectangle(left + bl_w + gap, pill_y, rt_w, pill_h)
-      draw_action_pill(rt_pill, tr("Ratings"),
+      draw_action_pill(rt_pill, tr("评分"),
                        with_alpha(AetherListColors.PRIMARY, 18),
                        with_alpha(AetherListColors.PRIMARY, 50),
                        AetherListColors.HEADER, font_size=28, roundness=0.35)
@@ -414,7 +414,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
       seg_rect = rl.Rectangle(seg_x, pill_y, seg_w, pill_h)
       if mode == "date":
         is_active = sort_mode in ("date", "date_oldest")
-        label = tr("Date (Oldest)") if sort_mode == "date_oldest" else tr("Date (Newest)")
+        label = tr("日期（最早）") if sort_mode == "date_oldest" else tr("日期（最新）")
       else:
         is_active = (mode == sort_mode)
         label = tr(_SORT_LABELS[mode])
@@ -498,10 +498,10 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
 
       if fav_entries or other_installed:
         if fav_entries:
-          y = self._draw_model_section(rect.x, y, width, tr("Favorites"), fav_entries)
+          y = self._draw_model_section(rect.x, y, width, tr("收藏"), fav_entries)
           y += SECTION_GAP
         if other_installed:
-          y = self._draw_model_section(rect.x, y, width, tr("Downloaded"), other_installed)
+          y = self._draw_model_section(rect.x, y, width, tr("已下载"), other_installed)
           y += SECTION_GAP
       else:
         self._draw_empty_state(rl.Rectangle(rect.x, y + 36, width, 200))
@@ -512,7 +512,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
       if self._controller.current_entry() is not None:
         entries = [e for e in entries if not self._controller.is_current_model(e.key)]
       if entries:
-        y = self._draw_model_section(rect.x, y, width, tr("Community Picks"), entries)
+        y = self._draw_model_section(rect.x, y, width, tr("社区精选"), entries)
       else:
         self._draw_empty_state(rl.Rectangle(rect.x, y + 36, width, 200))
       return
@@ -529,10 +529,10 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
       return
 
     if installed:
-      y = self._draw_model_section(rect.x, y, width, tr("On Device"), installed)
+      y = self._draw_model_section(rect.x, y, width, tr("设备上"), installed)
       y += SECTION_GAP
     if available:
-      y = self._draw_model_section(rect.x, y, width, tr("Available to Download"), available)
+      y = self._draw_model_section(rect.x, y, width, tr("可下载"), available)
       y += SECTION_GAP
 
   def _draw_empty_state(self, rect: rl.Rectangle):
@@ -633,19 +633,19 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
 
     badge_parts: list[str] = []
     if self._controller._params.get_bool("ModelRandomizer"):
-      badge_parts.append(tr("In Pool"))
+      badge_parts.append(tr("池中"))
     elif current:
-      badge_parts.append(tr("Active"))
+      badge_parts.append(tr("使用中"))
     elif entry.builtin:
-      badge_parts.append(tr("Built-in"))
+      badge_parts.append(tr("内置"))
     if entry.partial:
-      badge_parts.append(tr("Incomplete"))
+      badge_parts.append(tr("不完整"))
     if entry.requires_external_gpu:
-      badge_parts.append(tr("GPU required"))
+      badge_parts.append(tr("需要 GPU"))
     if entry.user_favorite:
-      badge_parts.append(tr("Saved"))
+      badge_parts.append(tr("已保存"))
     elif entry.community_favorite:
-      badge_parts.append(tr("Popular"))
+      badge_parts.append(tr("热门"))
 
     if badge_parts:
       badge_rect = rl.Rectangle(rect.x, rect.y + 113, rect.width, 32)
@@ -658,7 +658,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
     draw_download_icon(rl.Vector2(center_x, center_y), AetherListColors.HEADER)
     gui_label(
       rl.Rectangle(rect.x + 16, rect.y + rect.height - 58, rect.width - 32, 32),
-      tr("Download"),
+      tr("下载"),
       26,
       AetherListColors.SUBTEXT,
       FontWeight.MEDIUM,
@@ -670,7 +670,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
     phase = (time.monotonic() * 240.0) % 360.0
     draw_busy_ring(center, phase, PANEL_STYLE.accent)
 
-    label = progress_text if progress_text else tr("Downloading")
+    label = progress_text if progress_text else tr("下载中")
     gui_label(
       rl.Rectangle(rect.x + 16, rect.y + rect.height - 58, rect.width - 32, 32),
       label,
@@ -688,7 +688,7 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
       draw_overflow_dots(rl.Vector2(center_x, center_y), rl.Color(AetherListColors.HEADER.r, AetherListColors.HEADER.g, AetherListColors.HEADER.b, min(AetherListColors.HEADER.a, 200)))
       gui_label(
         rl.Rectangle(rect.x + 16, rect.y + rect.height - 55, rect.width - 32, 32),
-        tr("Options"),
+        tr("选项"),
         26,
         AetherListColors.SUBTEXT,
         FontWeight.MEDIUM,
@@ -708,27 +708,27 @@ class DrivingModelManagerView(AetherInteractiveMixin, Widget):
       self._interactive_rects[f"menu:{entry.key}:favorite"] = fav_rect
 
       # Delete button
-      draw_action_pill(delete_rect, tr("Delete"), AetherListColors.DANGER_SOFT, rl.Color(AetherListColors.DANGER.r, AetherListColors.DANGER.g, AetherListColors.DANGER.b, min(AetherListColors.DANGER.a, 70)), AetherListColors.DANGER)
+      draw_action_pill(delete_rect, tr("删除"), AetherListColors.DANGER_SOFT, rl.Color(AetherListColors.DANGER.r, AetherListColors.DANGER.g, AetherListColors.DANGER.b, min(AetherListColors.DANGER.a, 70)), AetherListColors.DANGER)
 
       # Favorite toggle button
       is_fav = entry.user_favorite
       fav_fill = rl.Color(210, 100, 130, 44) if is_fav else rl.Color(PANEL_STYLE.accent.r, PANEL_STYLE.accent.g, PANEL_STYLE.accent.b, 26)
       fav_border = rl.Color((210 if is_fav else PANEL_STYLE.accent.r), (100 if is_fav else PANEL_STYLE.accent.g), (130 if is_fav else PANEL_STYLE.accent.b), min((255 if is_fav else PANEL_STYLE.accent.a), 70))
       fav_text_color = rl.Color(210, 100, 130, 255) if is_fav else PANEL_STYLE.accent
-      fav_label = tr("Unfavorite") if is_fav else tr("Favorite")
+      fav_label = tr("取消收藏") if is_fav else tr("收藏")
       draw_action_pill(fav_rect, fav_label, fav_fill, fav_border, fav_text_color)
 
   def _draw_current_action(self, rect: rl.Rectangle):
     chip_rect = rl.Rectangle(rect.x + 35, rect.y + (rect.height - 61) / 2, rect.width - 70, 61)
-    AetherChip(tr("Current"), PANEL_STYLE.current_fill, PANEL_STYLE.current_border, AetherListColors.HEADER, font_size=26).render(chip_rect)
+    AetherChip(tr("当前"), PANEL_STYLE.current_fill, PANEL_STYLE.current_border, AetherListColors.HEADER, font_size=26).render(chip_rect)
 
   def _draw_protected_action(self, rect: rl.Rectangle):
     chip_rect = rl.Rectangle(rect.x + 29, rect.y + (rect.height - 61) / 2, rect.width - 58, 61)
-    AetherChip(tr("Protected"), rl.Color(255, 255, 255, 10), AetherListColors.MUTED, AetherListColors.SUBTEXT, font_size=26).render(chip_rect)
+    AetherChip(tr("受保护"), rl.Color(255, 255, 255, 10), AetherListColors.MUTED, AetherListColors.SUBTEXT, font_size=26).render(chip_rect)
 
   def _draw_utility_section(self, x: float, y: float, width: float, rows: list[dict]):
     content_w = width
-    draw_section_header(rl.Rectangle(x, y, content_w, SECTION_HEADER_HEIGHT), tr("Automation and Tuning"), style=PANEL_STYLE)
+    draw_section_header(rl.Rectangle(x, y, content_w, SECTION_HEADER_HEIGHT), tr("自动化与调校"), style=PANEL_STYLE)
     y += SECTION_HEADER_HEIGHT + SECTION_HEADER_GAP
 
     container_rect = rl.Rectangle(x, y, content_w, len(rows) * UTILITY_ROW_HEIGHT)
@@ -883,7 +883,7 @@ class StarPilotDrivingModelLayout(_SettingsPage):
   def _ensure_default_model_visible(self):
     default_key = self._default_model_key()
     default_name = self._default_model_name()
-    default_series = tr("Custom Series")
+    default_series = tr("自定义系列")
     default_released = ""
 
     for alias in model_key_aliases(default_key):
@@ -939,7 +939,7 @@ class StarPilotDrivingModelLayout(_SettingsPage):
       if not canonical_key or not name:
         continue
 
-      series = available_series[i].strip() if i < len(available_series) and available_series[i].strip() else tr("Custom Series")
+      series = available_series[i].strip() if i < len(available_series) and available_series[i].strip() else tr("自定义系列")
       version = available_versions[i].strip() if i < len(available_versions) else ""
       released = released_dates[i].strip() if i < len(released_dates) else ""
 
@@ -960,7 +960,7 @@ class StarPilotDrivingModelLayout(_SettingsPage):
       self._catalog_entries[key] = ModelCatalogEntry(
         key=key,
         name=name,
-        series=self._model_series_map.get(key, tr("Custom Series")),
+        series=self._model_series_map.get(key, tr("自定义系列")),
         version=version,
         released=self._model_released_dates.get(key, ""),
         builtin=is_builtin_model_key(key),
@@ -988,7 +988,7 @@ class StarPilotDrivingModelLayout(_SettingsPage):
 
   def _show_selection_dialog(self, title: str, options: dict[str, str] | list[str], current_val: str, on_confirm: Callable, current_key: str = ""):
     if not options:
-      gui_app.push_widget(alert_dialog(tr("No options available.")))
+      gui_app.push_widget(alert_dialog(tr("没有可用选项。")))
       return
 
     option_labels = list(options.values()) if isinstance(options, dict) else list(options)
@@ -1112,43 +1112,43 @@ class StarPilotDrivingModelLayout(_SettingsPage):
 
   def primary_header_button_state(self) -> tuple[str, bool]:
     if self._is_download_active():
-      return tr("Cancel Download"), True
+      return tr("取消下载"), True
     missing_count = len(self.available_entries())
     if missing_count == 0:
-      return tr("All Models On Device"), False
+      return tr("设备上所有模型"), False
     if ui_state.started:
-      return tr("Downloads Pause Onroad"), False
+      return tr("行驶时暂停下载"), False
     return tr(f"Download All Missing ({missing_count})"), True
 
   def secondary_header_button_state(self) -> tuple[str, bool]:
     if self._manifest_fetch_thread is not None and self._manifest_fetch_thread.is_alive():
-      return tr("Refreshing..."), False
+      return tr("刷新中…"), False
     if ui_state.started or self._is_download_active():
-      return tr("Refresh Catalog"), False
-    return tr("Refresh Catalog"), True
+      return tr("刷新目录"), False
+    return tr("刷新目录"), True
 
   def header_description_text(self) -> str:
     if self._is_download_active():
-      return self.download_progress_text() or tr("Downloading model files...")
+      return self.download_progress_text() or tr("正在下载模型文件…")
     if self._manifest_fetch_thread is not None and self._manifest_fetch_thread.is_alive():
-      return tr("Refreshing the driving model catalog in the background.")
+      return tr("正在后台刷新驾驶模型目录。")
     if ui_state.started:
-      return tr("Downloads and removals pause while driving.")
-    return tr("Tap a downloaded model to set it as active.")
+      return tr("行驶时暂停下载和删除。")
+    return tr("点击已下载的模型设为使用中。")
 
   def empty_state_title(self) -> str:
     if self._params.get_bool("ModelRandomizer"):
-      return tr("Model Randomizer Active")
+      return tr("模型随机器已启用")
     if self._manifest_fetch_thread is not None and self._manifest_fetch_thread.is_alive():
-      return tr("Refreshing model catalog")
-    return tr("No models available")
+      return tr("正在刷新模型目录")
+    return tr("没有可用模型")
 
   def empty_state_body(self) -> str:
     if self._params.get_bool("ModelRandomizer"):
-      return tr("Models are selected automatically each drive. Disable Randomizer to choose manually.")
+      return tr("每次驾驶自动选择模型。关闭随机器以手动选择。")
     if self._manifest_fetch_thread is not None and self._manifest_fetch_thread.is_alive():
-      return tr("StarPilot is pulling the latest driving model list. This panel will populate automatically when the refresh completes.")
-    return tr("Try refreshing the catalog once the device is offroad and connected.")
+      return tr("StarPilot 正在获取最新驾驶模型列表。刷新完成后此面板会自动填充。")
+    return tr("设备离车并联网后尝试刷新目录。")
 
   def utility_rows(self) -> list[dict]:
     rows = []
@@ -1159,17 +1159,17 @@ class StarPilotDrivingModelLayout(_SettingsPage):
         [
           {
             "id": "blacklist",
-            "title": tr("Blacklist"),
-            "subtitle": tr("Keep specific installed models out of the rotation."),
+            "title": tr("黑名单"),
+            "subtitle": tr("将特定已安装模型排除在轮换之外。"),
             "type": "value",
             "value": tr(f"{blacklist_count} blocked" if blacklist_count else "Manage"),
           },
           {
             "id": "ratings",
-            "title": tr("Ratings"),
-            "subtitle": tr("Review recorded drives and model score history."),
+            "title": tr("评分"),
+            "subtitle": tr("查看记录的驾驶和模型评分历史。"),
             "type": "value",
-            "value": tr("View"),
+            "value": tr("查看"),
           },
         ]
       )
@@ -1180,13 +1180,13 @@ class StarPilotDrivingModelLayout(_SettingsPage):
     selected_model = canonical_model_key(model_key)
     entry = self._catalog_entries.get(selected_model)
     if entry is None or not entry.installed:
-      gui_app.push_widget(alert_dialog(tr("Model is not available on this device.")))
+      gui_app.push_widget(alert_dialog(tr("此设备上不可用该模型。")))
       return False
     if entry.requires_external_gpu and not external_gpu_available():
-      gui_app.push_widget(alert_dialog(tr("This model requires a detected external GPU.")))
+      gui_app.push_widget(alert_dialog(tr("此模型需要检测到外接 GPU。")))
       return False
     if self._params.get_bool("ModelRandomizer"):
-      gui_app.push_widget(alert_dialog(tr("Turn off Model Randomizer to choose a model manually.")))
+      gui_app.push_widget(alert_dialog(tr("关闭模型随机器以手动选择模型。")))
       return False
     if selected_model == self._current_model_key:
       return True
@@ -1202,27 +1202,27 @@ class StarPilotDrivingModelLayout(_SettingsPage):
     self._update_model_metadata()
     if ui_state.started:
       self._params.put_bool("OnroadCycleRequested", True)
-      gui_app.push_widget(alert_dialog(tr("Drive-cycle requested for immediate apply.")))
+      gui_app.push_widget(alert_dialog(tr("已请求驾驶周期以立即生效。")))
     return True
 
   def start_download(self, model_key: str):
     self._update_model_metadata()
     if ui_state.started:
-      gui_app.push_widget(alert_dialog(tr("Cannot download models while driving.")))
+      gui_app.push_widget(alert_dialog(tr("行驶时无法下载模型。")))
       return False
     if self._is_download_active():
-      gui_app.push_widget(alert_dialog(tr("A model download is already in progress.")))
+      gui_app.push_widget(alert_dialog(tr("已有模型下载正在进行。")))
       return False
 
     entry = self._catalog_entries.get(canonical_model_key(model_key))
     if entry is None:
-      gui_app.push_widget(alert_dialog(tr("Unknown model.")))
+      gui_app.push_widget(alert_dialog(tr("未知模型。")))
       return False
     if entry.requires_external_gpu and not external_gpu_available():
-      gui_app.push_widget(alert_dialog(tr("This model requires a detected external GPU.")))
+      gui_app.push_widget(alert_dialog(tr("此模型需要检测到外接 GPU。")))
       return False
     if entry.installed:
-      gui_app.push_widget(alert_dialog(tr("Model is already on this device.")))
+      gui_app.push_widget(alert_dialog(tr("该模型已在此设备上。")))
       return False
 
     self._params_memory.remove(CANCEL_DOWNLOAD_PARAM)
@@ -1234,10 +1234,10 @@ class StarPilotDrivingModelLayout(_SettingsPage):
   def download_all_missing(self):
     self._update_model_metadata()
     if ui_state.started:
-      gui_app.push_widget(alert_dialog(tr("Cannot download models while driving.")))
+      gui_app.push_widget(alert_dialog(tr("行驶时无法下载模型。")))
       return False
     if self._is_download_active():
-      gui_app.push_widget(alert_dialog(tr("A model download is already in progress.")))
+      gui_app.push_widget(alert_dialog(tr("已有模型下载正在进行。")))
       return False
     if not self.available_entries():
       return False
@@ -1254,10 +1254,10 @@ class StarPilotDrivingModelLayout(_SettingsPage):
 
   def refresh_manifest(self):
     if ui_state.started:
-      gui_app.push_widget(alert_dialog(tr("Cannot refresh the model catalog while driving.")))
+      gui_app.push_widget(alert_dialog(tr("行驶时无法刷新模型目录。")))
       return False
     if self._is_download_active():
-      gui_app.push_widget(alert_dialog(tr("Cannot refresh the model catalog during an active download.")))
+      gui_app.push_widget(alert_dialog(tr("下载进行中无法刷新模型目录。")))
       return False
     self._fetch_manifest_async()
     return True
@@ -1267,16 +1267,16 @@ class StarPilotDrivingModelLayout(_SettingsPage):
     key = canonical_model_key(model_key)
     entry = self._catalog_entries.get(key)
     if entry is None:
-      gui_app.push_widget(alert_dialog(tr("Unknown model.")))
+      gui_app.push_widget(alert_dialog(tr("未知模型。")))
       return False
     if ui_state.started:
-      gui_app.push_widget(alert_dialog(tr("Cannot delete model files while driving.")))
+      gui_app.push_widget(alert_dialog(tr("行驶时无法删除模型文件。")))
       return False
     if self._is_download_active():
-      gui_app.push_widget(alert_dialog(tr("Cannot delete model files while a download is in progress.")))
+      gui_app.push_widget(alert_dialog(tr("下载进行中无法删除模型文件。")))
       return False
     if not self.is_model_removable(key):
-      gui_app.push_widget(alert_dialog(tr("This model is protected and cannot be removed.")))
+      gui_app.push_widget(alert_dialog(tr("此模型受保护，无法移除。")))
       return False
 
     for file in self._model_dir.iterdir():
@@ -1311,34 +1311,34 @@ class StarPilotDrivingModelLayout(_SettingsPage):
     def _on_close(result):
       if result != DialogResult.CONFIRM or not dialog.selection:
         return
-      if dialog.selection == tr("Add"):
+      if dialog.selection == tr("添加"):
         blacklistable = {k: v for k, v in self._model_file_to_name.items() if k not in blacklisted}
-        self._show_selection_dialog(tr("Add to Blacklist"), blacklistable, "", lambda k: self._params.put("BlacklistedModels", ",".join(blacklisted + [k])))
-      elif dialog.selection == tr("Remove"):
+        self._show_selection_dialog(tr("加入黑名单"), blacklistable, "", lambda k: self._params.put("BlacklistedModels", ",".join(blacklisted + [k])))
+      elif dialog.selection == tr("移除"):
         options = {k: self._model_file_to_name.get(k, k) for k in blacklisted}
 
         def _remove(k):
           blacklisted.remove(k)
           self._params.put("BlacklistedModels", ",".join(blacklisted))
 
-        self._show_selection_dialog(tr("Remove from Blacklist"), options, "", _remove)
-      elif dialog.selection == tr("Reset All"):
+        self._show_selection_dialog(tr("从黑名单移除"), options, "", _remove)
+      elif dialog.selection == tr("全部重置"):
         self._params.remove("BlacklistedModels")
 
-    dialog = MultiOptionDialog(tr("Manage Blacklist"), [tr("Add"), tr("Remove"), tr("Reset All")], callback=_on_close)
+    dialog = MultiOptionDialog(tr("管理黑名单"), [tr("添加"), tr("移除"), tr("全部重置")], callback=_on_close)
     gui_app.push_widget(dialog)
 
   def _on_scores_clicked(self):
     scores_raw = self._params.get("ModelDrivesAndScores", encoding="utf-8") or ""
     if not scores_raw:
-      gui_app.push_widget(alert_dialog(tr("No model ratings found.")))
+      gui_app.push_widget(alert_dialog(tr("未找到模型评分。")))
       return
     try:
       scores = json.loads(scores_raw)
       lines = [f"{key}: {value.get('Score', 0)}% ({value.get('Drives', 0)} drives)" for key, value in scores.items()]
-      gui_app.push_widget(ConfirmDialog("\n".join(lines), tr("Close"), rich=True))
+      gui_app.push_widget(ConfirmDialog("\n".join(lines), tr("关闭"), rich=True))
     except Exception:
-      gui_app.push_widget(alert_dialog(tr("Unable to read model ratings.")))
+      gui_app.push_widget(alert_dialog(tr("无法读取模型评分。")))
 
   def _on_model_randomizer_toggled(self, state: bool):
     self._params.put_bool("ModelRandomizer", state)
@@ -1352,16 +1352,16 @@ class StarPilotDrivingModelLayout(_SettingsPage):
         if result == DialogResult.CONFIRM:
           self._on_model_randomizer_toggled(True)
       gui_app.push_widget(ConfirmDialog(
-        tr("Model Randomizer will change your driving model each drive."),
-        tr("Enable"),
-        tr("Cancel"),
+        tr("模型随机器会在每次驾驶时更换驾驶模型。"),
+        tr("启用"),
+        tr("取消"),
         callback=on_confirm,
       ))
     else:
       self._on_model_randomizer_toggled(False)
 
   def random_model_button_label(self) -> str:
-    return tr("Model Randomizer")
+    return tr("模型随机器")
 
   def _update_state(self):
     if self._transient_status_text and time.monotonic() >= self._transient_status_until:

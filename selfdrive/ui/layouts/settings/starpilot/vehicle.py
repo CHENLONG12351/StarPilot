@@ -49,28 +49,28 @@ from openpilot.starpilot.common.starpilot_variables import migrate_cancel_button
 
 
 ACTION_OPTIONS = [
-  {"id": 0, "name": tr_noop("No Action")},
-  {"id": 1, "name": tr_noop("Change Personality"), "requires_longitudinal": True},
-  {"id": 2, "name": tr_noop("Force Coast"), "requires_longitudinal": True},
-  {"id": 14, "name": tr_noop("Pulse and Glide"), "requires_longitudinal": True, "requires_developer": True},
-  {"id": 3, "name": tr_noop("Pause Steering")},
-  {"id": 4, "name": tr_noop("Pause Accel/Brake"), "requires_longitudinal": True},
-  {"id": 5, "name": tr_noop("Toggle Experimental"), "requires_longitudinal": True},
-  {"id": 6, "name": tr_noop("Toggle Traffic"), "requires_longitudinal": True},
-  {"id": 7, "name": tr_noop("Toggle Switchback")},
-  {"id": 8, "name": tr_noop("Create Bookmark")},
-  {"id": 9, "name": tr_noop("Toggle Always On Lateral")},
-  {"id": 10, "name": tr_noop("Adopt Current Speed Limit")},
-  {"id": 11, "name": tr_noop("Favorite #1")},
-  {"id": 12, "name": tr_noop("Favorite #2")},
-  {"id": 13, "name": tr_noop("Favorite #3")},
+  {"id": 0, "name": tr_noop("无动作")},
+  {"id": 1, "name": tr_noop("切换驾驶风格"), "requires_longitudinal": True},
+  {"id": 2, "name": tr_noop("强制滑行"), "requires_longitudinal": True},
+  {"id": 14, "name": tr_noop("脉冲滑行"), "requires_longitudinal": True, "requires_developer": True},
+  {"id": 3, "name": tr_noop("暂停转向")},
+  {"id": 4, "name": tr_noop("暂停加速/刹车"), "requires_longitudinal": True},
+  {"id": 5, "name": tr_noop("切换实验模式"), "requires_longitudinal": True},
+  {"id": 6, "name": tr_noop("切换拥堵模式"), "requires_longitudinal": True},
+  {"id": 7, "name": tr_noop("切换回摆")},
+  {"id": 8, "name": tr_noop("创建书签")},
+  {"id": 9, "name": tr_noop("切换常开转向")},
+  {"id": 10, "name": tr_noop("采用当前限速")},
+  {"id": 11, "name": tr_noop("收藏 #1")},
+  {"id": 12, "name": tr_noop("收藏 #2")},
+  {"id": 13, "name": tr_noop("收藏 #3")},
 ]
 ACTION_NAMES = [o["name"] for o in ACTION_OPTIONS]
 ACTION_NAME_BY_ID = {o["id"]: o["name"] for o in ACTION_OPTIONS}
 
 
 def _lock_doors_timer_labels():
-  labels: dict[float, str] = {0.0: tr("Never")}
+  labels: dict[float, str] = {0.0: tr("从不")}
   for i in range(5, 305, 5):
     labels[float(i)] = f"{i}s"
   return labels
@@ -109,26 +109,26 @@ class VehicleSettingsManagerView(PanelManagerView):
     cs = starpilot_state.car_state
     fp = lambda: self._controller._params.get_bool("ForceFingerprint")
     rows = [
-      SettingRow("ForceFingerprint", "toggle", tr_noop("Disable Fingerprinting"),
-                 subtitle=tr_noop("Manually select vehicle instead of auto-detecting."),
+      SettingRow("ForceFingerprint", "toggle", tr_noop("禁用指纹识别"),
+                 subtitle=tr_noop("手动选择车辆，而非自动检测。"),
                  get_state=fp,
                  set_state=lambda s: self._controller._on_toggle("ForceFingerprint")),
-      SettingRow("CarMake", "value", tr_noop("Car Make"),
+      SettingRow("CarMake", "value", tr_noop("车辆品牌"),
                  get_value=self._controller._get_display_make,
                  on_click=lambda: self._controller._on_select("CarMake"),
                  enabled=fp),
-      SettingRow("CarModel", "value", tr_noop("Car Model"),
+      SettingRow("CarModel", "value", tr_noop("车型"),
                  get_value=self._controller._get_display_model,
                  on_click=lambda: self._controller._on_select("CarModel"),
                  enabled=fp),
     ]
     if cs.isToyota:
-      rows.append(SettingRow("LockDoorsTimer", "value", tr_noop("Lock Doors Timer"),
+      rows.append(SettingRow("LockDoorsTimer", "value", tr_noop("锁车门定时"),
                  get_value=lambda: _lock_doors_timer_labels().get(
                    float(self._controller._params.get_int("LockDoorsTimer")),
                    f"{self._controller._params.get_int('LockDoorsTimer')}s"),
                  on_click=lambda: self._controller._on_select("LockDoorsTimer")))
-      rows.append(SettingRow("ClusterOffset", "value", tr_noop("Dashboard Speed Offset"),
+      rows.append(SettingRow("ClusterOffset", "value", tr_noop("仪表速度偏移"),
                  get_value=lambda: f"{self._controller._params.get_float('ClusterOffset'):.3f}x",
                  on_click=lambda: self._controller._on_select("ClusterOffset")))
     return rows
@@ -146,7 +146,7 @@ class VehicleSettingsManagerView(PanelManagerView):
 
     dist_keys = ("DistanceButtonControl", "LongDistanceButtonControl", "VeryLongDistanceButtonControl")
     rows.append(SettingRow(
-      "combo:distance", "value", tr_noop("Distance Button"),
+      "combo:distance", "value", tr_noop("跟车距离按钮"),
       get_value=lambda k=dist_keys: self._combo_value(k),
       on_click=lambda: self._controller._on_select("combo:distance"),
     ))
@@ -154,17 +154,17 @@ class VehicleSettingsManagerView(PanelManagerView):
     if cs.isBolt and cs.hasPedal and self._controller._params.get_bool("RemapCancelToDistance"):
       cancel_keys = ("CancelButtonControl", "LongCancelButtonControl", "VeryLongCancelButtonControl")
       rows.append(SettingRow(
-        "combo:cancel", "value", tr_noop("Cancel Button"),
+        "combo:cancel", "value", tr_noop("取消按钮"),
         get_value=lambda k=cancel_keys: self._combo_value(k),
         on_click=lambda: self._controller._on_select("combo:cancel"),
       ))
 
     if not cs.isSubaru:
-      rows.append(SettingRow("LKASButtonControl", "value", tr_noop("LKAS Button"),
+      rows.append(SettingRow("LKASButtonControl", "value", tr_noop("LKAS 按钮"),
                    get_value=lambda: self._controller._get_action_name("LKASButtonControl"),
                    on_click=lambda: self._controller._on_select("LKASButtonControl")))
 
-    rows.append(SettingRow("MainCruiseButtonControl", "value", tr_noop("CC Main Button"),
+    rows.append(SettingRow("MainCruiseButtonControl", "value", tr_noop("巡航主按钮"),
                  get_value=lambda: self._controller._get_action_name("MainCruiseButtonControl"),
                  on_click=lambda: self._controller._on_select("MainCruiseButtonControl")))
 
@@ -172,12 +172,12 @@ class VehicleSettingsManagerView(PanelManagerView):
       mode_keys = ("ModeButtonControl", "LongModeButtonControl", "VeryLongModeButtonControl")
       star_keys = ("StarButtonControl", "LongStarButtonControl", "VeryLongStarButtonControl")
       rows.append(SettingRow(
-        "combo:mode", "value", tr_noop("Mode Button"),
+        "combo:mode", "value", tr_noop("模式按钮"),
         get_value=lambda k=mode_keys: self._combo_value(k),
         on_click=lambda: self._controller._on_select("combo:mode"),
       ))
       rows.append(SettingRow(
-        "combo:star", "value", tr_noop("Star Button"),
+        "combo:star", "value", tr_noop("星号按钮"),
         get_value=lambda k=star_keys: self._combo_value(k),
         on_click=lambda: self._controller._on_select("combo:star"),
       ))
@@ -243,14 +243,14 @@ class VehicleSettingsManagerView(PanelManagerView):
 
       draw_list_group_shell(rl.Rectangle(rect.x, y, col_w, self._container_h), style=PANEL_STYLE)
       row_y = y + 4
-      row_y = draw_group_header(rect.x + 24, row_y, col_w - 48, tr("Vehicle Identity"))
+      row_y = draw_group_header(rect.x + 24, row_y, col_w - 48, tr("车辆身份"))
       for i, row in enumerate(identity_rows):
         self._draw_row(rl.Rectangle(rect.x, row_y, col_w, self._left_row_height),
                        row, i == len(identity_rows) - 1 and not steering_rows)
         row_y += self._left_row_height
 
       if steering_rows:
-        row_y = draw_group_header(rect.x + 24, row_y, col_w - 48, tr("Steering Controls"))
+        row_y = draw_group_header(rect.x + 24, row_y, col_w - 48, tr("转向控制"))
         for i, row in enumerate(steering_rows):
           self._draw_row(rl.Rectangle(rect.x, row_y, col_w, self._left_row_height),
                          row, i == len(steering_rows) - 1)
@@ -259,13 +259,13 @@ class VehicleSettingsManagerView(PanelManagerView):
       if self._toggle_grid.tiles:
         draw_list_group_shell(rl.Rectangle(rx, y, col_w, self._container_h), style=PANEL_STYLE)
         tile_y = y + 4
-        tile_y = draw_group_header(rx + 24, tile_y, col_w - 48, tr("Features"))
+        tile_y = draw_group_header(rx + 24, tile_y, col_w - 48, tr("功能"))
         avail_h = self._container_h - (tile_y - y)
         self._render_page_grid(self._toggle_grid, rl.Rectangle(rx + 12, tile_y, col_w - 24, max(0.0, avail_h - 12)))
     else:
-      y = self._draw_section(y, rect.x, width, tr("Vehicle Identity"), identity_rows, self._left_row_height)
+      y = self._draw_section(y, rect.x, width, tr("车辆身份"), identity_rows, self._left_row_height)
       y += SECTION_GAP
-      y = self._draw_section(y, rect.x, width, tr("Steering Controls"), steering_rows, self._left_row_height)
+      y = self._draw_section(y, rect.x, width, tr("转向控制"), steering_rows, self._left_row_height)
       y += SECTION_GAP
 
       if self._toggle_grid.tiles:
@@ -277,7 +277,7 @@ class VehicleSettingsManagerView(PanelManagerView):
         group_h = th + 24 + 4 + hdr_oh
         draw_list_group_shell(rl.Rectangle(rect.x, y, width, group_h), style=PANEL_STYLE)
         features_y = y + 4
-        features_y = draw_group_header(rect.x + 24, features_y, width - 48, tr("Features"))
+        features_y = draw_group_header(rect.x + 24, features_y, width - 48, tr("功能"))
         self._render_page_grid(self._toggle_grid, rl.Rectangle(rect.x + 12, features_y, avail, max(0.0, group_h - (features_y - y) - 12)))
 
   def _measure_content_height(self, width: float) -> float:
@@ -328,96 +328,96 @@ class VehicleSettingsManagerView(PanelManagerView):
     toggles = []
 
     toggles.append({
-      "title": tr("Disable openpilot Long"),
-      "subtitle": tr("Revert to stock longitudinal control."),
+      "title": tr("禁用 openpilot 纵向"),
+      "subtitle": tr("恢复原厂纵向控制。"),
       "get_state": lambda: self._controller._params.get_bool("DisableOpenpilotLongitudinal"),
       "set_state": lambda s: self._controller._on_toggle("DisableOpenpilotLongitudinal"),
     })
 
     if cs.isGM and (cs.hasPedal or cs.canUsePedal):
       toggles.append({
-        "title": tr("Pedal for Long"),
+        "title": tr("踏板纵向控制"),
         "get_state": lambda: self._controller._params.get_bool("GMPedalLongitudinal"),
         "set_state": lambda s: self._controller._on_toggle("GMPedalLongitudinal"),
       })
       toggles.append({
-        "title": tr("Offsets on Dash Spoof"),
+        "title": tr("仪表欺骗偏移"),
         "get_state": lambda: self._controller._params.get_bool("GMDashSpoofOffsets"),
         "set_state": lambda s: self._controller._on_toggle("GMDashSpoofOffsets"),
       })
     if cs.isGM and cs.hasOpenpilotLongitudinal:
       toggles.append({
-        "title": tr("CAN Ignition Only"),
-        "subtitle": tr("Use Panda firmware that ignores the physical ignition line and starts only from CAN ignition."),
+        "title": tr("仅 CAN 点火"),
+        "subtitle": tr("使用忽略物理点火线、仅从 CAN 点火启动的 Panda 固件。"),
         "get_state": lambda: self._controller._params.get_bool("IgnoreIgnitionLine"),
-        "set_state": lambda s: self._controller._on_panda_firmware_toggle("IgnoreIgnitionLine", tr("CAN Ignition Only requires a Panda firmware update.")),
+        "set_state": lambda s: self._controller._on_panda_firmware_toggle("IgnoreIgnitionLine", tr("仅 CAN 点火需要更新 Panda 固件。")),
       })
       toggles.append({
-        "title": tr("Remote Start Panda"),
+        "title": tr("远程启动 Panda"),
         "get_state": lambda: self._controller._params.get_bool("RemoteStartBootsComma"),
-        "set_state": lambda s: self._controller._on_panda_firmware_toggle("RemoteStartBootsComma", tr("Remote Start requires a Panda firmware update.")),
+        "set_state": lambda s: self._controller._on_panda_firmware_toggle("RemoteStartBootsComma", tr("远程启动需要更新 Panda 固件。")),
       })
     if cs.isGM and cs.isVolt and not cs.hasSNG:
       toggles.append({
-        "title": tr("Volt SNG Hack"),
+        "title": tr("Volt 停走破解"),
         "get_state": lambda: self._controller._params.get_bool("VoltSNG"),
         "set_state": lambda s: self._controller._on_toggle("VoltSNG"),
       })
     if cs.isJeep:
       toggles.append({
-        "title": tr("Jeep Brake Hold"),
-        "subtitle": tr("Hold after ACC times out at a stop and resume when traffic moves."),
+        "title": tr("Jeep 刹车保持"),
+        "subtitle": tr("停车 ACC 超时后保持，车流移动时恢复。"),
         "get_state": lambda: self._controller._params.get_bool("JeepBrakeHold"),
         "set_state": lambda s: self._controller._on_toggle("JeepBrakeHold"),
       })
 
     if cs.isSubaru:
       toggles.append({
-        "title": tr("Stop and Go"),
+        "title": tr("停走"),
         "get_state": lambda: self._controller._params.get_bool("SubaruSNG"),
         "set_state": lambda s: self._controller._on_toggle("SubaruSNG"),
       })
       if self._controller._params.get_bool("SubaruSNG"):
         toggles.append({
-          "title": tr("Manual Parking Brake SNG"),
+          "title": tr("手动驻车制动停走"),
           "get_state": lambda: self._controller._params.get_bool("SubaruSNGManualParkingBrake"),
           "set_state": lambda s: self._controller._on_toggle("SubaruSNGManualParkingBrake"),
         })
 
     if cs.isToyota:
       toggles.append({
-        "title": tr("Auto Lock Doors"),
+        "title": tr("自动锁车门"),
         "get_state": lambda: self._controller._params.get_bool("LockDoors"),
         "set_state": lambda s: self._controller._on_toggle("LockDoors"),
       })
       toggles.append({
-        "title": tr("Auto Unlock Doors"),
+        "title": tr("自动解锁车门"),
         "get_state": lambda: self._controller._params.get_bool("UnlockDoors"),
         "set_state": lambda s: self._controller._on_toggle("UnlockDoors"),
       })
     if cs.isToyota and not cs.hasSNG:
       toggles.append({
-        "title": tr("Stop-and-Go Hack"),
+        "title": tr("停走破解"),
         "get_state": lambda: self._controller._params.get_bool("SNGHack"),
         "set_state": lambda s: self._controller._on_toggle("SNGHack"),
       })
     if cs.isBolt and cs.hasPedal:
       toggles.append({
-        "title": tr("Remap Cancel Button"),
-        "subtitle": tr("Treat the Cancel button as an extra mappable steering-wheel button."),
+        "title": tr("重映射取消按钮"),
+        "subtitle": tr("把取消按钮当作一个额外的可映射方向盘按钮。"),
         "get_state": lambda: self._controller._params.get_bool("RemapCancelToDistance"),
         "set_state": lambda s: self._controller._on_toggle("RemapCancelToDistance"),
       })
 
     if cs.isHKGCanFd and cs.hasOpenpilotLongitudinal:
       toggles.append({
-        "title": tr("EV Remote Climate"),
+        "title": tr("电动车远程空调"),
         "get_state": lambda: self._controller._params.get_bool("HKGRemoteStartBootsComma"),
-        "set_state": lambda s: self._controller._on_panda_firmware_toggle("HKGRemoteStartBootsComma", tr("EV Remote Climate requires a Panda firmware update.")),
+        "set_state": lambda s: self._controller._on_panda_firmware_toggle("HKGRemoteStartBootsComma", tr("电动车远程空调需要更新 Panda 固件。")),
       })
       toggles.append({
-        "title": tr("Nostalgia Mode"),
-        "subtitle": tr("Use the left paddle to pause openpilot acceleration and braking."),
+        "title": tr("怀旧模式"),
+        "subtitle": tr("用左拨片暂停 openpilot 加速和刹车。"),
         "get_state": lambda: self._controller._params.get_bool("NostalgiaMode"),
         "set_state": lambda s: self._controller._on_toggle("NostalgiaMode"),
       })
@@ -608,7 +608,7 @@ class ButtonActionComboDialog(Widget):
 
     draw_rounded_fill(c_face, c_fill, radius_px=41)
     draw_rounded_stroke(c_face, c_border, radius_px=41)
-    c_text = tr("CANCEL")
+    c_text = tr("取消")
     cts = measure_text_cached(self._font_btn, c_text, 49)
     rl.draw_text_ex(self._font_btn, c_text,
                     rl.Vector2(int(c_face.x + (c_face.width - cts.x) / 2),
@@ -620,7 +620,7 @@ class ButtonActionComboDialog(Widget):
 
     draw_rounded_fill(o_face, PANEL_STYLE.accent, radius_px=41)
     draw_rounded_stroke(o_face, with_alpha(PANEL_STYLE.accent, 150), radius_px=41)
-    o_text = tr("OK")
+    o_text = tr("确定")
     ots = measure_text_cached(self._font_btn, o_text, 49)
     rl.draw_text_ex(self._font_btn, o_text,
                     rl.Vector2(int(o_face.x + (o_face.width - ots.x) / 2),
@@ -668,7 +668,7 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
             starpilot_state.update(force=True)
             if starpilot_state.started:
               HARDWARE.reboot()
-        gui_app.push_widget(ConfirmDialog(tr("Disable openpilot longitudinal control?"), tr("Disable"), callback=on_confirm))
+        gui_app.push_widget(ConfirmDialog(tr("禁用 openpilot 纵向控制？"), tr("禁用"), callback=on_confirm))
       else:
         self._params.put_bool("DisableOpenpilotLongitudinal", False)
         starpilot_state.update(force=True)
@@ -705,9 +705,9 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
       threading.Thread(target=flash_and_reboot, daemon=True).start()
       starpilot_state.update(force=True)
       self._manager_view._rebuild_toggle_grid()
-      gui_app.push_widget(alert_dialog(tr("Panda flashing started. Device will reboot when finished.")))
+      gui_app.push_widget(alert_dialog(tr("Panda 刷写已开始，完成后设备将重启。")))
 
-    gui_app.push_widget(ConfirmDialog(prompt, tr("Flash"), callback=on_confirm))
+    gui_app.push_widget(ConfirmDialog(prompt, tr("刷写"), callback=on_confirm))
 
   def _on_select(self, key: str):
     if key.startswith("combo:"):
@@ -729,24 +729,24 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
   def _show_button_combo_dialog(self, key: str):
     combo_configs = {
       "combo:distance": {
-        "title": tr_noop("Distance Button"),
+        "title": tr_noop("跟车距离按钮"),
         "keys": ("DistanceButtonControl", "LongDistanceButtonControl", "VeryLongDistanceButtonControl"),
-        "labels": (tr_noop("Press"), tr_noop("Long Press"), tr_noop("Very Long")),
+        "labels": (tr_noop("短按"), tr_noop("长按"), tr_noop("超长按")),
       },
       "combo:cancel": {
-        "title": tr_noop("Cancel Button"),
+        "title": tr_noop("取消按钮"),
         "keys": ("CancelButtonControl", "LongCancelButtonControl", "VeryLongCancelButtonControl"),
-        "labels": (tr_noop("Press"), tr_noop("Long Press"), tr_noop("Very Long")),
+        "labels": (tr_noop("短按"), tr_noop("长按"), tr_noop("超长按")),
       },
       "combo:mode": {
-        "title": tr_noop("Mode Button"),
+        "title": tr_noop("模式按钮"),
         "keys": ("ModeButtonControl", "LongModeButtonControl", "VeryLongModeButtonControl"),
-        "labels": (tr_noop("Press"), tr_noop("Long Press"), tr_noop("Very Long")),
+        "labels": (tr_noop("短按"), tr_noop("长按"), tr_noop("超长按")),
       },
       "combo:star": {
-        "title": tr_noop("Star Button"),
+        "title": tr_noop("星号按钮"),
         "keys": ("StarButtonControl", "LongStarButtonControl", "VeryLongStarButtonControl"),
-        "labels": (tr_noop("Press"), tr_noop("Long Press"), tr_noop("Very Long")),
+        "labels": (tr_noop("短按"), tr_noop("长按"), tr_noop("超长按")),
       },
     }
     config = combo_configs.get(key)
@@ -760,7 +760,7 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
   def _on_select_make(self):
     makes = list(self._make_options)
     if not makes:
-      gui_app.push_widget(ConfirmDialog(tr("No fingerprint list available."), tr("OK")))
+      gui_app.push_widget(ConfirmDialog(tr("没有可用的指纹列表。"), tr("确定")))
       return
     current_make = self._params.get("CarMake") or ""
     default_make = current_make if current_make in makes else makes[0]
@@ -775,17 +775,17 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
           self._params.remove("CarModelName")
         starpilot_state.update(force=True)
 
-    dialog = MultiOptionDialog(tr("Select Make"), makes, default_make, callback=on_select)
+    dialog = MultiOptionDialog(tr("选择品牌"), makes, default_make, callback=on_select)
     gui_app.push_widget(dialog)
 
   def _on_select_model(self):
     make = self._params.get("CarMake") or ""
     if not make:
-      gui_app.push_widget(ConfirmDialog(tr("Please select a Car Make first!"), tr("OK")))
+      gui_app.push_widget(ConfirmDialog(tr("请先选择车辆品牌！"), tr("确定")))
       return
     model_options = self._models_by_make.get(make, ())
     if not model_options:
-      gui_app.push_widget(ConfirmDialog(tr("No models available for this make."), tr("OK")))
+      gui_app.push_widget(ConfirmDialog(tr("该品牌没有可用车型。"), tr("确定")))
       return
     option_labels = [o.option_label for o in model_options]
     selected_by_label = {o.option_label: o for o in model_options}
@@ -803,7 +803,7 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
         self._params.put("CarMake", make)
         starpilot_state.update(force=True)
 
-    dialog = MultiOptionDialog(tr("Select Model"), option_labels, default_option, callback=on_select)
+    dialog = MultiOptionDialog(tr("选择车型"), option_labels, default_option, callback=on_select)
     gui_app.push_widget(dialog)
 
   def _show_action_picker(self, key: str):
@@ -840,7 +840,7 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
       if res == DialogResult.CONFIRM:
         self._params.put_int("LockDoorsTimer", int(val))
 
-    gui_app.push_widget(AetherSliderDialog(tr("Lock Doors Timer"), 0, 300, 5,
+    gui_app.push_widget(AetherSliderDialog(tr("锁车门定时"), 0, 300, 5,
                                             self._params.get_int("LockDoorsTimer"), on_close,
                                             labels=_lock_doors_timer_labels(), color=PANEL_STYLE.accent))
 
@@ -849,7 +849,7 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
       if res == DialogResult.CONFIRM:
         self._params.put_float("ClusterOffset", float(val))
 
-    gui_app.push_widget(AetherSliderDialog(tr("Dashboard Speed Offset"), 1.000, 1.050, 0.001,
+    gui_app.push_widget(AetherSliderDialog(tr("仪表速度偏移"), 1.000, 1.050, 0.001,
                                             self._params.get_float("ClusterOffset"), on_close,
                                             unit="x", color=PANEL_STYLE.accent))
 
@@ -860,7 +860,7 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
     model = self._params.get("CarModel") or ""
     if model:
       return self._make_by_model.get(model, format_fingerprint_value(model.split("_", 1)[0]))
-    return tr("Auto") if not self._params.get_bool("ForceFingerprint") else tr("None")
+    return tr("自动") if not self._params.get_bool("ForceFingerprint") else tr("无")
 
   def _get_display_model(self) -> str:
     selected = self._get_selected_model_option()
@@ -875,7 +875,7 @@ class StarPilotVehicleSettingsLayout(_SettingsPage):
       return self._models_by_value[model].button_label
     if model:
       return format_fingerprint_value(model)
-    return tr("Auto") if not self._params.get_bool("ForceFingerprint") else tr("None")
+    return tr("自动") if not self._params.get_bool("ForceFingerprint") else tr("无")
 
   def _get_selected_model_option(self) -> FingerprintModelOption | None:
     model = self._params.get("CarModel") or ""

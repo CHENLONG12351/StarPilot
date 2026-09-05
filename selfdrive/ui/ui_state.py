@@ -60,6 +60,8 @@ class UIState:
         "longitudinalPlan",
         "gpsLocationExternal",
         "mapdOut",
+        "carrotMan",
+        "can",
         "carOutput",
         "carControl",
         "liveParameters",

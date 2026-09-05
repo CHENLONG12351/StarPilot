@@ -3,34 +3,34 @@ import { hideSidebar, upperFirst } from "/assets/js/utils.js";
 
 const MENU_ITEMS = {
   home: [
-    { name: "Home", link: "/", icon: "bi-house-fill" },
+    { name: "首页", link: "/", icon: "bi-house-fill" },
   ],
   recordings: [
-    { name: "Dashcam Routes", link: "/dashcam_routes", icon: "bi-camera-reels" },
-    { name: "Screen Recordings", link: "/screen_recordings", icon: "bi-record-circle" },
+    { name: "行车记录", link: "/dashcam_routes", icon: "bi-camera-reels" },
+    { name: "屏幕录像", link: "/screen_recordings", icon: "bi-record-circle" },
   ],
   tools: [
-    { name: "Toggles", link: "/device_settings", icon: "bi-toggle-on" },
-    { name: "Download Speed Limits", link: "/download_speed_limits", icon: "bi-download" },
-    { name: "Error Logs", link: "/manage_error_logs", icon: "bi-exclamation-triangle" },
-    { name: "Galaxy", link: "/galaxy", icon: "bi-globe2" },
-    { name: "Sentry Mode", link: "/sentry", icon: "bi-shield-exclamation" },
-    { name: "Lateral Tuning", link: "/tuning", icon: "bi-sign-turn-right" },
-    { name: "Long Maneuvers", link: "/longitudinal_maneuvers", icon: "bi-signpost-split" },
-    { name: "Maps", link: "/manage_maps", icon: "bi-map" },
-    { name: "Navigation", link: "/set_navigation_destination", icon: "bi-geo-alt-fill" },
-    { name: "App Keys", link: "/manage_navigation_keys", icon: "bi-key-fill" },
-    { name: "Model Manager", link: "/manage_models", icon: "bi-cpu" },
-    { name: "Plots", link: "/plots", icon: "bi-graph-up-arrow" },
-    { name: "Testing Ground", link: "/testing_ground", icon: "bi-bezier2" },
-    { name: "Troubleshoot", link: "/troubleshoot", icon: "bi-tools" },
-    { name: "V-Adj Spot Monitor", link: "/manage_v_asm", icon: "bi-eye" },
-    { name: "PiP Side Camera", link: "/manage_pip_sidecam", icon: "bi-badge-hd", developerOnly: true },
-    { name: "Theme Maker", link: "/theme_maker", icon: "bi-palette-fill" },
-    { name: "Tmux Log", link: "/manage_tmux", icon: "bi-terminal" },
-    { name: "Backup and Restore", link: "/manage_toggles", icon: "bi-arrow-repeat" },
-    { name: "Software", link: "/manage_updates", icon: "bi-arrow-up-circle" },
-    { name: "Vehicle Features", link: "/vehicle_features", icon: "bi-car-front" },
+    { name: "设置开关", link: "/device_settings", icon: "bi-toggle-on" },
+    { name: "下载限速", link: "/download_speed_limits", icon: "bi-download" },
+    { name: "错误日志", link: "/manage_error_logs", icon: "bi-exclamation-triangle" },
+    { name: "Galaxy 云", link: "/galaxy", icon: "bi-globe2" },
+    { name: "哨兵模式", link: "/sentry", icon: "bi-shield-exclamation" },
+    { name: "转向调校", link: "/tuning", icon: "bi-sign-turn-right" },
+    { name: "纵向操作", link: "/longitudinal_maneuvers", icon: "bi-signpost-split" },
+    { name: "地图", link: "/manage_maps", icon: "bi-map" },
+    { name: "导航", link: "/set_navigation_destination", icon: "bi-geo-alt-fill" },
+    { name: "应用密钥", link: "/manage_navigation_keys", icon: "bi-key-fill" },
+    { name: "模型管理", link: "/manage_models", icon: "bi-cpu" },
+    { name: "图表", link: "/plots", icon: "bi-graph-up-arrow" },
+    { name: "测试场", link: "/testing_ground", icon: "bi-bezier2" },
+    { name: "故障排查", link: "/troubleshoot", icon: "bi-tools" },
+    { name: "V-ASM 侧方监测", link: "/manage_v_asm", icon: "bi-eye" },
+    { name: "画中画侧摄像头", link: "/manage_pip_sidecam", icon: "bi-badge-hd", developerOnly: true },
+    { name: "主题制作", link: "/theme_maker", icon: "bi-palette-fill" },
+    { name: "Tmux 日志", link: "/manage_tmux", icon: "bi-terminal" },
+    { name: "备份与恢复", link: "/manage_toggles", icon: "bi-arrow-repeat" },
+    { name: "软件更新", link: "/manage_updates", icon: "bi-arrow-up-circle" },
+    { name: "车辆功能", link: "/vehicle_features", icon: "bi-car-front" },
   ],
 };
 
@@ -43,6 +43,8 @@ function matchesPath(currentPath, link) {
 }
 
 function buildSectionMarkup(section, links, currentPath) {
+  const sectionNames = { home: "主页", recordings: "录像", tools: "工具" };
+  const sectionTitle = sectionNames[section] || section;
   const linksMarkup = links.filter((link) => !link.developerOnly || galaxyDeveloperMode).map((link) => {
     const active = matchesPath(currentPath, link.link) ? "active" : "";
     return `
@@ -59,7 +61,7 @@ function buildSectionMarkup(section, links, currentPath) {
     <div class="sidebar_widget">
       <ul class="menu_section">
         <li>
-          <span class="section-title">${upperFirst(section)}</span>
+          <span class="section-title">${sectionTitle}</span>
           <ul id="${section}">
             ${linksMarkup}
           </ul>

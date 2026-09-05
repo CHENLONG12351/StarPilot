@@ -243,8 +243,12 @@ class CarInterface(CarInterfaceBase):
       volt_one_pedal_mode = False
 
     ret.brand = "gm"
-    ret.safetyConfigs = [get_safety_config(structs.CarParams.SafetyModel.gm)]
-    ret.autoResumeSng = False
+    cfgs = [get_safety_config(structs.CarParams.SafetyModel.gm)]
+    # multipanda: internal panda is pandas[0] (noOutput), red panda is pandas[1] (GM safety)
+    if any(fingerprint.get(i) for i in (CanBus.POWERTRAIN, CanBus.OBSTACLE, CanBus.CAMERA)):
+      cfgs.insert(0, get_safety_config(structs.CarParams.SafetyModel.noOutput))
+    ret.safetyConfigs = cfgs
+    ret.autoResumeSng = True
     # Some Volt installs don't expose the BSM frame during startup fingerprinting.
     ret.enableBsm = 0x142 in fingerprint[CanBus.POWERTRAIN] or candidate in VOLT_BSM_CARS
     has_sascm = 0x2FF in fingerprint[CanBus.POWERTRAIN]
@@ -260,11 +264,11 @@ class CarInterface(CarInterfaceBase):
     pedal_long_enabled = pedal_detected and gm_pedal_longitudinal
     if pedal_long_enabled:
       ret.enableGasInterceptorDEPRECATED = True
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_GAS_INTERCEPTOR.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_GAS_INTERCEPTOR.value
       if candidate == CAR.CHEVROLET_BOLT_ACC_2022_2023:
         # Keep ACC Bolts on stock ACC path even if a pedal frame appears.
         ret.enableGasInterceptorDEPRECATED = False
-        ret.safetyConfigs[0].safetyParam &= ~GMSafetyFlags.FLAG_GM_GAS_INTERCEPTOR.value
+        ret.safetyConfigs[-1].safetyParam &= ~GMSafetyFlags.FLAG_GM_GAS_INTERCEPTOR.value
 
     kaofui_cars = SDGM_CAR | ASCM_INT | VOLT_LIKE_CARS | {CAR.CHEVROLET_MALIBU_HYBRID_CC}
     ret.longitudinalTuning.kiBP = [5., 35.] if candidate in kaofui_cars else [5., 35., 60.]
@@ -292,7 +296,7 @@ class CarInterface(CarInterfaceBase):
       ret.pcmCruise = True
       ret.minEnableSpeed = 5 * CV.KPH_TO_MS
       ret.minSteerSpeed = 10 * CV.KPH_TO_MS
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM.value
 
       ret.longitudinalTuning.kiV = [0.5, 0.5]
       ret.stoppingDecelRate = 1.0
@@ -303,14 +307,14 @@ class CarInterface(CarInterfaceBase):
       if ret.alphaLongitudinalAvailable and alpha_long:
         ret.pcmCruise = False
         ret.openpilotLongitudinalControl = True
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
 
     elif is_camera_acc:
       ret.alphaLongitudinalAvailable = (candidate not in CC_ONLY_CAR) and not ret.enableGasInterceptorDEPRECATED
       ret.networkLocation = NetworkLocation.fwdCamera
       ret.radarUnavailable = True
       ret.pcmCruise = not ret.enableGasInterceptorDEPRECATED
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM.value
       ret.minEnableSpeed = 5 * CV.KPH_TO_MS
       ret.minSteerSpeed = 10 * CV.KPH_TO_MS
 
@@ -323,7 +327,7 @@ class CarInterface(CarInterfaceBase):
       if ret.alphaLongitudinalAvailable and alpha_long:
         ret.pcmCruise = False
         ret.openpilotLongitudinalControl = True
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
 
     elif candidate in SDGM_CAR:
       ret.alphaLongitudinalAvailable = candidate not in (CC_ONLY_CAR | ASCM_INT | SDGM_CAR) or has_sascm
@@ -332,10 +336,10 @@ class CarInterface(CarInterfaceBase):
       ret.pcmCruise = True
       ret.minEnableSpeed = -1.
       ret.minSteerSpeed = 7 * CV.MPH_TO_MS
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_SDGM.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_SDGM.value
 
       if ACCELERATOR_POS_MSG not in fingerprint[CanBus.POWERTRAIN]:
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_FORCE_BRAKE_C9.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_FORCE_BRAKE_C9.value
         ret.flags |= GMFlags.FORCE_BRAKE_C9.value
 
       ret.longitudinalTuning.kiV = [0.5, 0.5] if candidate in kaofui_cars else [0.5, 0.5, 0.5]
@@ -347,7 +351,7 @@ class CarInterface(CarInterfaceBase):
       if ret.alphaLongitudinalAvailable and alpha_long:
         ret.pcmCruise = False
         ret.openpilotLongitudinalControl = True
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
       if is_bolt_2022_2023_pedal:
         ret.alphaLongitudinalAvailable = False
         ret.pcmCruise = False
@@ -359,11 +363,11 @@ class CarInterface(CarInterfaceBase):
       ret.pcmCruise = True
       ret.minEnableSpeed = 5 * CV.KPH_TO_MS
       ret.minSteerSpeed = 7 * CV.MPH_TO_MS
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM.value
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_ASCM_INT.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_ASCM_INT.value
       if ACCELERATOR_POS_MSG not in fingerprint[CanBus.POWERTRAIN]:
         ret.flags |= GMFlags.FORCE_BRAKE_C9.value
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_FORCE_BRAKE_C9.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_FORCE_BRAKE_C9.value
 
       ret.longitudinalTuning.kiV = [0.5, 0.5] if candidate in kaofui_cars else [0.5, 0.5, 0.5]
       ret.stoppingDecelRate = 1.0
@@ -374,7 +378,7 @@ class CarInterface(CarInterfaceBase):
       if ret.alphaLongitudinalAvailable and alpha_long:
         ret.pcmCruise = False
         ret.openpilotLongitudinalControl = True
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM_LONG.value
       if is_bolt_2022_2023_pedal:
         ret.alphaLongitudinalAvailable = False
         ret.pcmCruise = False
@@ -384,8 +388,9 @@ class CarInterface(CarInterfaceBase):
       ret.networkLocation = NetworkLocation.gateway
       ret.radarUnavailable = RADAR_HEADER_MSG not in fingerprint[CanBus.OBSTACLE] and CAMERA_DATA_HEADER_MSG not in fingerprint[CanBus.OBSTACLE] and not docs
       ret.pcmCruise = False
-      ret.minEnableSpeed = 18 * CV.MPH_TO_MS
+      ret.minEnableSpeed = 20 * CV.KPH_TO_MS
       ret.minSteerSpeed = 7 * CV.MPH_TO_MS
+      ret.startAccel = 0.6  # standstill launch accel: 0.0 leaves ASCM gas inactive (no auto-follow from stop)
 
       ret.longitudinalTuning.kiV = [0.5, 0.5] if candidate in kaofui_cars else [0.5, 0.5, 0.5]
       if candidate in kaofui_cars:
@@ -395,7 +400,7 @@ class CarInterface(CarInterfaceBase):
         ret.stopAccel = -1.5
 
       if ret.enableGasInterceptorDEPRECATED:
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_ASCM_LONG.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_ASCM_LONG.value
 
     if candidate in ALT_ACCS:
       ret.alphaLongitudinalAvailable = False
@@ -494,7 +499,7 @@ class CarInterface(CarInterfaceBase):
         ret.lateralTuning.torque.kiDEPRECATED *= 0.9
         ret.lateralTuning.torque.kdDEPRECATED *= 0.9
         ret.lateralTuning.torque.kfDEPRECATED = 0.026
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_BOLT_2017.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_BOLT_2017.value
 
       if ret.enableGasInterceptorDEPRECATED:
         # ACC Bolts use pedal for full longitudinal control, not just SNG.
@@ -584,12 +589,12 @@ class CarInterface(CarInterfaceBase):
       ret.networkLocation = NetworkLocation.fwdCamera
       ret.openpilotLongitudinalControl = not disable_openpilot_long
       ret.pcmCruise = False
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.HW_CAM.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.HW_CAM.value
 
     if ret.enableGasInterceptorDEPRECATED and (candidate in CC_ONLY_CAR or candidate in CAMERA_ACC_CAR):
       # Pedal-long path: only entered when pedal interceptor was actually enabled.
       ret.flags |= GMFlags.PEDAL_LONG.value
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_PEDAL_LONG.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_PEDAL_LONG.value
 
       if candidate == CAR.CHEVROLET_MALIBU_CC:
         ret.longitudinalTuning.kpBP = [0.0, 5.0, 35.0]
@@ -613,21 +618,21 @@ class CarInterface(CarInterfaceBase):
 
       if is_bolt_2022_2023_pedal:
         # Gen2 Bolt pedal-long should follow the no-ACC panda path.
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_NO_ACC.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_NO_ACC.value
         ret.startingState = True
         ret.startAccel = 0.55
         ret.vEgoStarting = max(ret.vEgoStarting, 0.35)
 
       if candidate in (CAR.CHEVROLET_BOLT_ACC_2022_2023_PEDAL, CAR.CHEVROLET_MALIBU_HYBRID_CC):
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_BOLT_2022_PEDAL.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_BOLT_2022_PEDAL.value
 
       ret.stoppingDecelRate = 0.8
 
     if ret.enableGasInterceptorDEPRECATED and candidate == CAR.CHEVROLET_MALIBU_HYBRID_CC:
       # Keep Malibu Hybrid pedal on the same path as Bolt pedal-long behavior.
       ret.flags |= GMFlags.PEDAL_LONG.value
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_PEDAL_LONG.value
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_BOLT_2022_PEDAL.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_PEDAL_LONG.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_BOLT_2022_PEDAL.value
       ret.longitudinalTuning.kpBP = [0.0, 5.0, 15.0, 35.0]
       ret.longitudinalTuning.kpV = [0.095, 0.085, 0.065, 0.050]
       ret.longitudinalTuning.kiBP = [0.0, 3.0, 6.0, 35.0]
@@ -669,7 +674,7 @@ class CarInterface(CarInterfaceBase):
       ret.pcmCruise = False
       ret.minEnableSpeed = 24 * CV.MPH_TO_MS
       ret.radarUnavailable = True
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_CC_LONG.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_CC_LONG.value
 
       if candidate != CAR.CHEVROLET_MALIBU_HYBRID_CC:
         ret.longitudinalTuning.kpBP = [10.7, 10.8, 28.]  # 10.7 m/s == 24 mph
@@ -684,23 +689,23 @@ class CarInterface(CarInterfaceBase):
         ret.stoppingDecelRate = 11.18  # == 25 mph/s (.04 rate)
 
     if candidate in CC_ONLY_CAR:
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_NO_ACC.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_NO_ACC.value
 
     if candidate in SDGM_CAR and ACCELERATOR_POS_MSG not in fingerprint[CanBus.POWERTRAIN]:
       ret.flags |= GMFlags.FORCE_BRAKE_C9.value
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_FORCE_BRAKE_C9.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_FORCE_BRAKE_C9.value
 
     # Exception for flashed cars, or cars whose camera was removed.
     missing_camera_msg = CAM_MSG not in fingerprint.get(CanBus.CAMERA, {})
     if (ret.networkLocation == NetworkLocation.fwdCamera or candidate in CC_ONLY_CAR) and missing_camera_msg and candidate not in (ASCM_INT | SDGM_CAR):
       ret.flags |= GMFlags.NO_CAMERA.value
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_NO_CAMERA.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_NO_CAMERA.value
 
     if ACCELERATOR_POS_MSG not in fingerprint[CanBus.POWERTRAIN]:
       ret.flags |= GMFlags.NO_ACCELERATOR_POS_MSG.value
       if candidate == CAR.CHEVROLET_VOLT and ret.networkLocation == NetworkLocation.gateway:
         # Reuse the no-camera safety bit as an ASCM Volt selector for the alternate EBCM brake path.
-        ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_NO_CAMERA.value
+        ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_NO_CAMERA.value
 
     try:
       remote_start_boots_comma = params.get_bool("RemoteStartBootsComma")
@@ -708,7 +713,7 @@ class CarInterface(CarInterfaceBase):
       remote_start_boots_comma = False
 
     if remote_start_boots_comma:
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_REMOTE_START_BOOTS_COMMA.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_REMOTE_START_BOOTS_COMMA.value
 
     volt_stock_friction_brake_safety = (
       ret.openpilotLongitudinalControl and
@@ -726,7 +731,7 @@ class CarInterface(CarInterfaceBase):
       # longitudinal is configured but not currently active, so the bit must
       # be present regardless of the current long-control mode. Do not expose
       # the path at all when OP long is disabled in CarParams.
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_PADDLE_SCHED.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_PADDLE_SCHED.value
 
     volt_stock_one_pedal_safety = (
       ret.openpilotLongitudinalControl and
@@ -743,7 +748,7 @@ class CarInterface(CarInterfaceBase):
       # ACC paths. The bit is ignored by the actual 3D1 scheduler unless the
       # car is on a pedal-long CC-only path, so this stays isolated from Bolt.
       # Do not expose the path at all when OP long is disabled in CarParams.
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_3D1_SCHED.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_3D1_SCHED.value
 
     use_panda_3d1_sched = (
       ret.openpilotLongitudinalControl and
@@ -753,7 +758,7 @@ class CarInterface(CarInterfaceBase):
       candidate != CAR.CHEVROLET_BOLT_ACC_2022_2023_PEDAL
     )
     if use_panda_3d1_sched:
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_3D1_SCHED.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_3D1_SCHED.value
 
     use_panda_paddle_sched = (
       ret.openpilotLongitudinalControl and
@@ -762,7 +767,7 @@ class CarInterface(CarInterfaceBase):
       candidate in CC_REGEN_PADDLE_CAR
     )
     if use_panda_paddle_sched:
-      ret.safetyConfigs[0].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_PADDLE_SCHED.value
+      ret.safetyConfigs[-1].safetyParam |= GMSafetyFlags.FLAG_GM_PANDA_PADDLE_SCHED.value
 
     try:
       remap_cancel_to_distance_toggle = params.get_bool("RemapCancelToDistance")

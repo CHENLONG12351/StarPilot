@@ -66,6 +66,10 @@ class NavigationCardRenderer(Widget):
 
     self._enabled = False
     self._valid = False
+    self._icon_override: str | None = None
+    self._carrot_active = False
+    self._carrot_limit = 0
+    self._carrot_countdown = -1
     self._distance = ""
     self._primary_text = ""
     self._secondary_text = ""
@@ -149,7 +153,10 @@ class NavigationCardRenderer(Widget):
     return candidate if (ASSETS_PATH / candidate).exists() else FALLBACK_ICON
 
   def _get_icon(self, maneuver_type: str, modifier: str):
-    icon_name = self._icon_filename(maneuver_type, modifier)
+    if self._icon_override is not None:
+      icon_name = self._icon_override
+    else:
+      icon_name = self._icon_filename(maneuver_type, modifier)
     if icon_name not in self._icons:
       icon_path = ASSETS_PATH / icon_name
       if not icon_path.exists():
@@ -162,13 +169,131 @@ class NavigationCardRenderer(Widget):
       self._icons[icon_name] = texture
     return self._icons[icon_name]
 
+  def _carrot_icon_name(self, x_turn_info: int) -> str:
+    mapping = {
+      1: "direction_turn_left.png",
+      2: "direction_turn_right.png",
+      3: "direction_off_ramp_slight_left.png",
+      4: "direction_off_ramp_slight_right.png",
+      7: "direction_fork_left.png",
+      6: "direction_fork_right.png",
+      5: "direction_roundabout_straight.png",
+      14: "direction_uturn.png",
+      201: "direction_arrive.png",
+      0: "direction_continue.png",
+    }
+    return mapping.get(x_turn_info, FALLBACK_ICON)
+
+  def _update_carrot(self) -> bool:
+    if not ui_state.ui_params.get_bool("CarrotNavUI"):
+      return False
+    sm = ui_state.sm
+    if sm.recv_frame["carrotMan"] <= 0 or (sm.frame - sm.recv_frame["carrotMan"]) > 100:
+      return False
+
+    carrot = sm["carrotMan"]
+    if carrot.activeCarrot <= 1:
+      return False
+    if not carrot.szTBTMainText and carrot.xTurnInfo <= 0:
+      return False
+
+    self._distance = _format_distance(float(carrot.xDistToTurn), ui_state.is_metric)
+    self._primary_text = str(carrot.szTBTMainText or "")
+    self._secondary_text = str(carrot.szSdiDescr or "")
+    self._maneuver_type = "turn"
+    self._modifier = "straight"
+    self._icon_override = self._carrot_icon_name(int(carrot.xTurnInfo))
+    self._carrot_limit = int(carrot.nRoadLimitSpeed) if carrot.activeCarrot >= 2 else 0
+    self._carrot_countdown = int(carrot.leftSec) if 0 <= int(carrot.leftSec) <= 11 else -1
+    self._carrot_active = True
+    self._valid = True
+    return True
+
+  def _render_carrot(self, rect: rl.Rectangle) -> None:
+    """CP 导航卡：固定屏幕左侧，转向图标+距离+路名+限速牌+倒计时一体排版。"""
+    card_width = 660
+    card_height = 200
+    container_x = int(rect.x + 40)
+    container_y = int(rect.y + 280)
+    container = rl.Rectangle(container_x, container_y, card_width, card_height)
+    self._interactive_rect = container
+    rl.draw_rectangle_rounded(container, 0.2, 10, rl.Color(7, 11, 18, 228))
+    rl.draw_rectangle_rounded_lines_ex(container, 0.2, 10, 2, rl.Color(255, 255, 255, 34))
+
+    icon = self._get_icon(self._maneuver_type, self._modifier)
+    icon_size = 110
+    icon_x = container_x + 28
+    icon_y = container_y + 22
+    rl.draw_texture_pro(icon, rl.Rectangle(0, 0, icon.width, icon.height),
+                        rl.Rectangle(icon_x, icon_y, icon_size, icon_size), rl.Vector2(0, 0), 0, rl.WHITE)
+
+    distance_font_size = 30
+    distance_size = measure_text_cached(self._font_bold, self._distance, distance_font_size)
+    rl.draw_text_ex(self._font_bold, self._distance,
+                    rl.Vector2(icon_x + (icon_size - distance_size.x) / 2, icon_y + icon_size + 10),
+                    distance_font_size, 0, rl.WHITE)
+
+    text_x = icon_x + icon_size + 28
+    text_width = card_width - (text_x - container_x) - 160
+    title_lines, title_font_size = self._fit_title(self._primary_text, text_width, 40, 28)
+    self._draw_top_aligned_lines(title_lines, text_x, container_y + 26, title_font_size, line_gap=2)
+
+    if self._secondary_text:
+      secondary = self._truncate_text(self._secondary_text, text_width, 24)
+      rl.draw_text_ex(self._font_medium, secondary,
+                      rl.Vector2(text_x, container_y + card_height - 42), 24, 0, rl.Color(255, 255, 255, 172))
+
+    # 限速牌 + 倒计时（卡片右列，整体在卡内不越界）
+    if self._carrot_limit > 0:
+      center = rl.Vector2(container_x + card_width - 82, container_y + 64)
+      rl.draw_circle_v(center, 48, rl.WHITE)
+      rl.draw_ring(center, 40, 48, 0, 360, 0, rl.Color(230, 40, 40, 255))
+      speed_text = str(self._carrot_limit)
+      text_size = measure_text_cached(self._font_bold, speed_text, 44)
+      rl.draw_text_ex(self._font_bold, speed_text,
+                      rl.Vector2(center.x - text_size.x / 2, center.y - text_size.y / 2), 44, 0, rl.BLACK)
+      if self._carrot_countdown >= 0:
+        cd_text = f"{self._carrot_countdown}s"
+        cd_size = measure_text_cached(self._font_bold, cd_text, 34)
+        rl.draw_text_ex(self._font_bold, cd_text,
+                        rl.Vector2(center.x - cd_size.x / 2, container_y + card_height - 48), 34, 0,
+                        rl.Color(255, 200, 0, 255))
+    elif self._carrot_countdown >= 0:
+      cd_text = f"{self._carrot_countdown}s"
+      cd_size = measure_text_cached(self._font_bold, cd_text, 40)
+      rl.draw_text_ex(self._font_bold, cd_text,
+                      rl.Vector2(container_x + card_width - 132, container_y + 40), 40, 0,
+                      rl.Color(255, 200, 0, 255))
+
+  def _render_carrot_chip(self, rect: rl.Rectangle) -> None:
+    """CP 导航卡折叠态：左上小圆角块。"""
+    chip_size = 84
+    chip_x = int(rect.x + 40)
+    chip_y = int(rect.y + 280)
+    chip_rect = rl.Rectangle(chip_x, chip_y, chip_size, chip_size)
+    self._interactive_rect = chip_rect
+    rl.draw_rectangle_rounded(chip_rect, 0.34, 10, rl.Color(7, 11, 18, 232))
+    rl.draw_rectangle_rounded_lines_ex(chip_rect, 0.34, 10, 2, rl.Color(255, 255, 255, 40))
+    icon = self._get_icon(self._maneuver_type, self._modifier)
+    icon_size = 52
+    rl.draw_texture_pro(icon, rl.Rectangle(0, 0, icon.width, icon.height),
+                        rl.Rectangle(chip_x + (chip_size - icon_size) / 2, chip_y + (chip_size - icon_size) / 2,
+                                     icon_size, icon_size), rl.Vector2(0, 0), 0, rl.WHITE)
+
   def _update_state(self) -> None:
     params = ui_state.ui_params
     self._enabled = params.get_bool("NavigationUI")
     self._valid = False
     self._interactive_rect = rl.Rectangle(0, 0, 0, 0)
+    self._icon_override = None
+    self._carrot_active = False
+    self._carrot_limit = 0
+    self._carrot_countdown = -1
 
     if not self._enabled:
+      return
+
+    if self._update_carrot():
       return
 
     if not (params.get("NavDestination") or ""):
@@ -352,7 +477,7 @@ class NavigationCardRenderer(Widget):
     )
 
     then_x = divider_x + 15
-    then_label = "Then"
+    then_label = "然后"
     then_font_size = 36
     then_size = measure_text_cached(self._font_medium, then_label, then_font_size)
     then_label_x = then_x + (then_section_width - 23 - then_size.x) / 2
@@ -464,7 +589,7 @@ class NavigationCardRenderer(Widget):
       rl.Color(255, 255, 255, 38),
     )
 
-    then_label = "Then"
+    then_label = "然后"
     then_font_size = 20
     then_size = measure_text_cached(self._font_medium, then_label, then_font_size)
     then_x = divider_x + (next_section_width - then_size.x) / 2
@@ -515,6 +640,12 @@ class NavigationCardRenderer(Widget):
   def _render(self, rect: rl.Rectangle) -> None:
     self._update_state()
     if not self._valid:
+      return
+    if self._carrot_active and self._layout_variant != "mici":
+      if self._collapsed:
+        self._render_carrot_chip(rect)
+      else:
+        self._render_carrot(rect)
       return
     if self._collapsed:
       if self._layout_variant == "mici":

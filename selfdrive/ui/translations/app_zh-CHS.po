@@ -1172,3 +1172,177 @@ msgstr "✓ 已订阅"
 #, python-format
 msgid "🔥 Firehose Mode 🔥"
 msgstr "🔥 Firehose 模式 🔥"
+
+msgid "Applying update..."
+msgstr "正在应用更新…"
+
+msgid "Are you sure you want to reset driver monitoring calibration?"
+msgstr "确定要重置驾驶员监测校准吗？"
+
+msgid "Are you sure you want to unpair from Galaxy?"
+msgstr "确定要与 Galaxy 取消配对吗？"
+
+msgid "Automatically Install Updates"
+msgstr "自动安装更新"
+
+msgid "Automatically install updates when parked with an active internet connection."
+msgstr "停车且有网络连接时自动安装更新。"
+
+msgid "Cannot update while driving"
+msgstr "行驶中无法更新"
+
+msgid "Chill"
+msgstr "舒缓"
+
+msgid "Clears the saved driver monitoring wheel-side calibration and any manual right-hand-driving override."
+msgstr "清除已保存的驾驶员监测方向盘侧校准及手动设置的右舵模式。"
+
+msgid "Disengage to Reset Driver Monitoring"
+msgstr "退出激活状态以重置驾驶员监测"
+
+msgid "Do you want to perform a full factory reset? All saved assets and settings will be permanently deleted!"
+msgstr "确定要恢复出厂设置吗？所有已保存的资料和设置将被永久删除！"
+
+msgid "Enable the openpilot longitudinal control (alpha) toggle to allow Experimental mode."
+msgstr "请开启 openpilot 纵向控制（Alpha）开关以启用实验模式。"
+
+msgid "Error Log"
+msgstr "错误日志"
+
+msgid "Experimental mode is currently unavailable on this car since the car's stock ACC is used for longitudinal control."
+msgstr "本车使用原厂 ACC 做纵向控制，实验模式暂不可用。"
+
+msgid "FAST UPDATE"
+msgstr "快速更新"
+
+msgid "Factory Reset"
+msgstr "恢复出厂设置"
+
+msgid "Failed to pair with Galaxy."
+msgstr "与 Galaxy 配对失败。"
+
+msgid "Failed: {}"
+msgstr "失败：{}"
+
+msgid "Fast Update"
+msgstr "快速更新"
+
+msgid "Fast update will replace the current installation without backup and reboot the device. Continue?"
+msgstr "快速更新将直接替换当前安装且不做备份，完成后将重启设备。是否继续？"
+
+msgid "Fetching latest commit..."
+msgstr "正在获取最新版本…"
+
+msgid "Galaxy is not paired yet."
+msgstr "Galaxy 尚未配对。"
+
+msgid "LIMIT"
+msgstr "限速"
+
+msgid "MANAGE"
+msgstr "管理"
+
+msgid "No error log found."
+msgstr "未找到错误日志。"
+
+msgid "PENDING"
+msgstr "待生效"
+
+msgid "Pair with Galaxy"
+msgstr "与 Galaxy 配对"
+
+msgid "Pair your device with Galaxy for remote access to The Galaxy."
+msgstr "将设备与 Galaxy 配对，即可远程访问 Galaxy。"
+
+msgid "Pair your device with comma connect (connect.comma.ai) and claim your comma prime offer."
+msgstr "将设备与 comma connect（connect.comma.ai）配对，领取 comma prime 权益。"
+
+msgid "Password must be at least 6 characters."
+msgstr "密码至少需要 6 个字符。"
+
+msgid "Preview the driver facing camera to ensure that driver monitoring has good visibility. (vehicle must be off)"
+msgstr "预览驾驶员摄像头画面，确保驾驶员监测视野良好。（需车辆熄火）"
+
+msgid "REBOOTING"
+msgstr "正在重启"
+
+msgid "RETRY"
+msgstr "重试"
+
+msgid "Record and store microphone audio while driving. The audio will be included in the dashcam video in comma connect."
+msgstr "行驶时录制并保存麦克风音频，音频将包含在 comma connect 的行车录像中。"
+
+msgid "Reset Driver Monitoring"
+msgstr "重置驾驶员监测"
+
+msgid "Right Hand Driving"
+msgstr "右舵驾驶"
+
+msgid "SOURCES"
+msgstr "来源"
+
+msgid "Safe Mode"
+msgstr "安全模式"
+
+msgid "Scan to open Galaxy"
+msgstr "扫码打开 Galaxy"
+
+msgid "Set Galaxy Password"
+msgstr "设置 Galaxy 密码"
+
+msgid "Set a password to secure your Galaxy access. Min 6 characters."
+msgstr "设置密码以保护 Galaxy 访问，至少 6 个字符。"
+
+msgid "Show QR"
+msgstr "显示二维码"
+
+msgid "Skip"
+msgstr "跳过"
+
+msgid "Starting fast update..."
+msgstr "正在开始快速更新…"
+
+msgid "Starting..."
+msgstr "正在启动…"
+
+msgid "Tap anywhere to dismiss"
+msgstr "点击任意位置关闭"
+
+msgid "Temporarily force driving-affecting StarPilot settings back to safe defaults, stock tuning, and the branch default model until disabled."
+msgstr "开启后，所有影响驾驶的 StarPilot 设置将临时强制恢复为安全默认值、原厂调校和分支默认模型，直至关闭。"
+
+msgid "This is a complete factory reset and cannot be undone. Are you absolutely sure?"
+msgstr "这将完全恢复出厂设置且无法撤销，确定要继续吗？"
+
+msgid "UI Debug Mode"
+msgstr "界面调试模式"
+
+msgid "Unpair"
+msgstr "取消配对"
+
+msgid "Update applied, rebooting..."
+msgstr "更新完成，正在重启…"
+
+msgid "Updating submodules..."
+msgstr "正在更新子模块…"
+
+msgid "Upload data from the driver facing camera and help improve the driver monitoring algorithm."
+msgstr "上传驾驶员摄像头数据，帮助改进驾驶员监测算法。"
+
+msgid "Use Prebuilt Binaries"
+msgstr "使用预编译程序"
+
+msgid "Use right-hand-drive driver monitoring. This follows the auto-detected side until changed manually."
+msgstr "使用右舵驾驶员监测，默认跟随自动检测的方向，可手动更改。"
+
+msgid "You must accept the Terms and Conditions to use openpilot. Read the latest terms at https://comma.ai/terms before continuing."
+msgstr "使用 openpilot 前必须同意条款与条件。请先阅读最新条款：https://comma.ai/terms"
+
+msgid "checking..."
+msgstr "检查中…"
+
+msgid "downloading..."
+msgstr "下载中…"
+
+msgid "finalizing update..."
+msgstr "正在完成更新…"

@@ -451,12 +451,13 @@ class AccState:
 
 
 class CanBus:
-  POWERTRAIN = 0
-  OBSTACLE = 1
-  CAMERA = 2
-  CHASSIS = 2
-  LOOPBACK = 128
-  DROPPED = 192
+  # red panda (multipanda) install: GM buses live at offset 4 on the second panda
+  POWERTRAIN = 4
+  OBSTACLE = 5
+  CAMERA = 6
+  CHASSIS = 6
+  LOOPBACK = 132
+  DROPPED = 196
 
 
 class GMFlags(IntFlag):
